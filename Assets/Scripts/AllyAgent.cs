@@ -27,8 +27,9 @@ public class AllyAgent : SteeringAgent
 		}
 		if (Input.GetKey(KeyCode.Space))
 		{
-			if(GameData.Instance.AllyRocketsAvailable <= 0)
+			if (attackType == Attack.AttackType.Rocket && GameData.Instance.AllyRocketsAvailable <= 0)
 			{
+				// no more rocket ammo.
 				attackType = Attack.AttackType.Gun;
 			}
 
