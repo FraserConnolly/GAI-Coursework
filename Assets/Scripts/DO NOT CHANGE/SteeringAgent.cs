@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class SteeringAgent : MonoBehaviour
@@ -78,7 +77,7 @@ public abstract class SteeringAgent : MonoBehaviour
 	public bool AttackWith(Attack.AttackType attack)
 	{
 		IsAttackInProgress = true;
-		if (GameData.Instance.AttackManager.Create(attack, this))
+		if (GameData.Instance.CreateAttack(attack, this))
 		{
 			TimeToNextAttack = DefaultTimeToNextAttack;
 			IsAttackInProgress = false;

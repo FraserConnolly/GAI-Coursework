@@ -34,6 +34,11 @@ public class Map
 		return index / MapWidth;
 	}
 
+	public int MapIndex(int x, int y)
+	{
+		return x + y * MapWidth;
+	}
+
 	public Terrain GetTerrainAt(int index)
 	{
 		return (Terrain)mapData[index];

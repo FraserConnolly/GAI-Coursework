@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,8 +8,6 @@ public sealed class GameData : MonoBehaviour
 
     public Map Map { get; private set; }
 
-
-	
 	public MapRenderer MapRenderer { get; private set; }
 
     public readonly List<GameObject> enemies = new List<GameObject>();
@@ -23,10 +22,18 @@ public sealed class GameData : MonoBehaviour
 		return UnitManager.GetUnitHealth(unit);
 	}
 
+	public void CreateAllyUnits(Dictionary<int, Type> mapPositionToUnitType)
+	{
+		UnitManager.CreateAllyUints(mapPositionToUnitType);
+	}
+
+
+
+
 	#region Private interface
 
 	private UnitManager UnitManager { get; set; }
-	public AttackManager AttackManager { get; set; }
+	private AttackManager AttackManager { get; set; }
 
 	// Start is called before the first frame update
 	private void Awake()
@@ -45,16 +52,25 @@ public sealed class GameData : MonoBehaviour
         Map = new Map();
 
 		UnitManager = gameObject.AddComponent<UnitManager>();
-
 		AttackManager = gameObject.AddComponent<AttackManager>();
         AttackManager.Initialise(UnitManager);
-
 		MapRenderer = gameObject.AddComponent<MapRenderer>();
 	}
 
 	private void Start()
 	{
 		MapRenderer.Initialise(Map.GetMapData(), Map.MapWidth, Map.MapHeight);
+	}
+
+	private void Update()
+	{
+		AttackManager.Tick();
+		UnitManager.Tick();
+	}
+
+	public bool CreateAttack(Attack.AttackType attack, SteeringAgent agent)
+	{
+		return AttackManager.Create(attack, agent);
 	}
 	#endregion
 }

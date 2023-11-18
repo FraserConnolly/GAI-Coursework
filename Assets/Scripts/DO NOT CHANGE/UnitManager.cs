@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class UnitManager : MonoBehaviour
@@ -45,6 +43,28 @@ public class UnitManager : MonoBehaviour
 		return -1.0f;
 	}
 
+	/// <summary>
+	/// Recreates ally units at the map index locations as keys in the dictionary to the class types you want to create.
+	/// NOTE: use Map.MapIndex(int x, int y) to convert unit x, y coordinates to a map index
+	/// NOTE: this will only work before the first update cycle so its important to call this as soon as possible
+	/// </summary>
+	/// <param name="mapIndexToUnitType">Map index to the unit type to create. Use typeof(YourClassName) to get the Type</param>
+	public void CreateAllyUints(Dictionary<int, Type> mapIndexToUnitType)
+	{
+		if(hasFristUpdateExcuted)
+		{
+			Debug.LogError("CreateAllyUints needs to be call before the first update cycle is executed. Ensure this called in a Start function and that the GameObject is in the Heirarchy from the beginning,");
+			return;
+		}
+
+		var map = GameData.Instance.Map;
+		var allyUnitLocations = map.GetInitialPlayerLocations();
+		foreach (var allyUnitLocation in allyUnitLocations)
+		{
+			allyUnits.Add(CreateUnit(map, map.MapIndexToX(allyUnitLocation), map.MapIndexToY(allyUnitLocation), false, mapIndexToUnitType[allyUnitLocation]));
+		}
+	}
+
 	#region Private interface
 
 	private Dictionary<GameObject, float> unitToHealth = new Dictionary<GameObject, float>();
@@ -57,41 +77,49 @@ public class UnitManager : MonoBehaviour
     private GameObject enemiesGO;
     private GameObject alliesGO;
 
-	
+	private bool hasFristUpdateExcuted = false;
 
-	// Start is called before the first frame update
-	private void Start()
-    {
-        enemiesGO = new GameObject("Enemies");
-        enemiesGO.transform.parent = transform;
+	private void Awake()
+	{
+		enemiesGO = new GameObject("Enemies");
+		enemiesGO.transform.parent = transform;
 
 		alliesGO = new GameObject("Allies");
 		alliesGO.transform.parent = transform;
 
+		unitSprite = Resources.Load<Sprite>("Unit");
+	}
+
+	// Start is called before the first frame update
+	private void Start()
+    {
 		var gameData = GetComponent<GameData>();
+		var map = gameData.Map;
 
-        var map = gameData.Map;
-        var enemyUnitLocations = map.GetInitialUnitLocations();
-        var allyUnitLocations = map.GetInitialPlayerLocations();
-
-        unitSprite = Resources.Load<Sprite>("Unit");
-
+		var enemyType = typeof(EnemyAgent);
+		var enemyUnitLocations = map.GetInitialUnitLocations();
 		foreach (var enemyUnitLocation in enemyUnitLocations)
 		{
-			enemyUnits.Add(CreateUnit(map, map.MapIndexToX(enemyUnitLocation), map.MapIndexToY(enemyUnitLocation), true));
+			enemyUnits.Add(CreateUnit(map, map.MapIndexToX(enemyUnitLocation), map.MapIndexToY(enemyUnitLocation), true, enemyType));
 		}
-		foreach (var allyUnitLocation in allyUnitLocations)
+
+		if (allyUnits.Count <= 0)
 		{
-			allyUnits.Add(CreateUnit(map, map.MapIndexToX(allyUnitLocation), map.MapIndexToY(allyUnitLocation), false));
+			var allyType = typeof(AllyAgent);
+			var allyUnitLocations = map.GetInitialPlayerLocations();
+			foreach (var allyUnitLocation in allyUnitLocations)
+			{
+				allyUnits.Add(CreateUnit(map, map.MapIndexToX(allyUnitLocation), map.MapIndexToY(allyUnitLocation), false, allyType));
+			}
 		}
 
 		CopyUnitsToLists();
 	}
 
-    private void Update()
+    public void Tick()
     {
 		CopyUnitsToLists();
-
+		hasFristUpdateExcuted = true;
 	}
 
 	private void CopyUnitsToLists()
@@ -116,8 +144,13 @@ public class UnitManager : MonoBehaviour
 	}
 
 
-    private GameObject CreateUnit(Map map, int mapX, int mapY, bool isEnemy)
+    private GameObject CreateUnit(Map map, int mapX, int mapY, bool isEnemy, Type type)
     {
+		if(!typeof(SteeringAgent).IsAssignableFrom(type))
+		{
+			throw new TypeAccessException("Type " + type.Name + " does not derive from " + typeof(SteeringAgent).Name);
+		}
+
 		var unit = new GameObject(isEnemy ? "Enemy " + enemyUnits.Count : "Ally " + allyUnits.Count);
         unit.transform.parent = isEnemy ? enemiesGO.transform : alliesGO.transform;
 		unit.transform.position = new Vector3(mapX, mapY, 0.0f);
@@ -133,15 +166,7 @@ public class UnitManager : MonoBehaviour
 
 		// Ensure this is last as the users entry point into these classes will be called when this happens
 		// so everything needs setup before this
-		if (isEnemy)
-        {
-            unit.AddComponent<EnemyAgent>();
-        }
-        else
-        {
-			unit.AddComponent<AllyAgent>();
-		}
-
+		unit.AddComponent(type);
 		return unit;
     }
 

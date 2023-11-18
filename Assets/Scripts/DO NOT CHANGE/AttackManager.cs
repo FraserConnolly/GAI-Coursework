@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,8 +41,8 @@ public class AttackManager : MonoBehaviour
 		}
 	}
 
-	// Update is called once per frame
-	private void Update()
+	// Called once per frame
+	public void Tick()
 	{
 		var gameData = GameData.Instance;
 		var map = gameData.Map;

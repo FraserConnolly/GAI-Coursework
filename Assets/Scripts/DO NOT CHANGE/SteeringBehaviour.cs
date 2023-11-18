@@ -30,7 +30,7 @@ public abstract class SteeringBehaviour : MonoBehaviour
 				continue;
 			}
 
-			var squareDistance = (unit.transform.position - unit.transform.position).sqrMagnitude;
+			var squareDistance = (unit.transform.position - position).sqrMagnitude;
 			if (squareDistance < nearestSquareDistance)
 			{
 				squareDistance = nearestSquareDistance;
