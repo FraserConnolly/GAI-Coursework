@@ -28,6 +28,8 @@ public class AttackManager : MonoBehaviour
 	// Start is called before the first frame update
 	private void Start()
 	{
+		spriteNameToSprite.Clear();
+
 		attacksGO = new GameObject("Attacks");
 		attacksGO.transform.parent = transform;
 
