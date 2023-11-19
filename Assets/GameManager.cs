@@ -14,6 +14,10 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI _enemyCountDisplay;
 
+    [SerializeField]
+    bool reloadOnLevelComplete = false;
+    bool levelComplete = false;
+
     public void ReloadScene()
     {
         SceneManager.LoadScene(0, LoadSceneMode.Single);
@@ -35,6 +39,11 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if ( levelComplete  )
+        {
+            return;
+        }
+
         AllyCount = data.allies.Where(a => a != null).Count();
         EnemyCount = data.enemies.Where(e => e != null).Count();
 
@@ -42,18 +51,29 @@ public class GameManager : MonoBehaviour
 
         if (AllyCount == 0)
         {
-            Debug.Log("Allies have won!");
+            levelComplete = true;
+
+            Debug.Log("Enemies have won!");
             Debug.Break();
+
+            if (reloadOnLevelComplete)
+            {
             ReloadScene();
             return;
         }
+        }
+        else if (EnemyCount == 0)
+        {
+            levelComplete = true;
 
-        if (EnemyCount == 0)
+            Debug.Log("Allies have won!");
+            Debug.Break();
+            if (reloadOnLevelComplete)
         {
             Debug.Log("Enemies have won!");
             Debug.Break();
             ReloadScene();
-            return;
+            }
         }
     }
 

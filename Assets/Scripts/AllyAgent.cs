@@ -1,60 +1,71 @@
+using System.Collections.Generic;
 using UnityEngine;
+using GCU.FraserConnolly;
+using GCU.FraserConnolly.AI.SteeringBehaviours;
 
 public class AllyAgent : SteeringAgent
 {
+	private WeaponManager _weaponManager;
 	private Attack.AttackType attackType = Attack.AttackType.Gun;
 
-	protected override void InitialiseFromAwake()
+	// Steering Behaviours
+	private SeekToPoint _seekToPointBehaviour;
+
+    // to do - this is for debugging
+    [SerializeField, Range(0f, 1f)]
+    private float _inertia = 0.9f;
+
+    protected override void InitialiseFromAwake()
 	{
-		gameObject.AddComponent<SeekToMouse>();
-	}
+		_weaponManager = gameObject.AddComponent<WeaponManager>();
+     
+		// steering behaviours
+		var mouse = gameObject.AddComponent<SeekToMouse>();
+		mouse.enabled = false;
+
+        _seekToPointBehaviour = gameObject.AddComponent<SeekToPoint>();
+        gameObject.AddComponent<PreventOverlap>();
+        gameObject.AddComponent<Seperation>();
+        gameObject.AddComponent<Alignment>();
+    }
 
 	protected override void CooperativeArbitration()
 	{
-		base.CooperativeArbitration();
+        // The base CooperativeArbitration method written by Hamid doesn't 
+        // have any means of arbitrating between steering behvaiours.
+        // Make sure not to use it.
+        //base.CooperativeArbitration();
 
-		if (Input.GetKeyDown(KeyCode.Alpha1))
-		{
-			attackType = Attack.AttackType.Melee;
-		}
-		if (Input.GetKeyDown(KeyCode.Alpha2))
-		{
-			attackType = Attack.AttackType.Gun;
-		}
-		if (Input.GetKeyDown(KeyCode.Alpha3))
-		{
-			attackType = Attack.AttackType.Rocket;
-		}
-		if (Input.GetKey(KeyCode.Space))
-		{
-			if (attackType == Attack.AttackType.Rocket && GameData.Instance.AllyRocketsAvailable <= 0)
-			{
-				// no more rocket ammo.
-				attackType = Attack.AttackType.Gun;
-			}
+        SteeringVelocity = Vector3.zero;
 
-			AttackWith(attackType);
-		}
-		if(Input.GetMouseButtonDown(1))
-		{
-			SteeringVelocity = Vector3.zero;
-			CurrentVelocity = Vector3.zero;
-			var seekToMouse = GetComponent<SeekToMouse>();
-			seekToMouse.enabled = !seekToMouse.enabled;
-		}
-	}
+        var steeringBehvaiours = new List<SteeringBehaviour>();
 
-	protected override void UpdateDirection()
+        GetComponents(steeringBehvaiours);
+        foreach (SteeringBehaviour currentBehaviour in steeringBehvaiours)
+        {
+            if (currentBehaviour.enabled)
+            {
+                Vector3 updateVelocity = currentBehaviour.UpdateBehaviour(this);
+
+                if ( currentBehaviour is IWeightable weightable )
+                {
+                    updateVelocity *= weightable.Weight;
+                }
+
+                SteeringVelocity += updateVelocity;
+            }
+        }
+
+        // apply intertia to CurrentVelocity if there is no steering velocity
+        if ( SteeringVelocity ==  Vector3.zero && CurrentVelocity != Vector3.zero)
+        {
+            CurrentVelocity *= _inertia;
+        }
+
+    }
+
+    protected override void UpdateDirection()
 	{
-		if (GetComponent<SeekToMouse>().enabled)
-		{
-			base.UpdateDirection();
-		}
-		else
-		{
-			var mouseInWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			mouseInWorld.z = 0.0f;
-			transform.up = Vector3.Normalize(mouseInWorld - transform.position);
-		}
+		base.UpdateDirection();
 	}
 }

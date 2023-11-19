@@ -204,7 +204,7 @@ GameObject:
   - component: {fileID: 258422810}
   - component: {fileID: 258422809}
   - component: {fileID: 258422814}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -315,7 +315,7 @@ GameObject:
   m_Component:
   - component: {fileID: 562359869}
   - component: {fileID: 562359870}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: DO NOT CHANGE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -502,7 +502,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1004533190}
   - component: {fileID: 1004533189}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -968,6 +968,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2141041817}
   - component: {fileID: 2141041816}
+  - component: {fileID: 2141041818}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -991,6 +992,10 @@ MonoBehaviour:
   EnemyCount: 0
   _allyCountDisplay: {fileID: 1883122654}
   _enemyCountDisplay: {fileID: 2108175445}
+  _weaponTypes:
+  - {fileID: 11400000, guid: 4f4fa3d8aed057b4da0d45d7f5ff12db, type: 2}
+  - {fileID: 11400000, guid: 3032fce7b94399d4e9ce901e900a6f9c, type: 2}
+  - {fileID: 11400000, guid: 3eaa9d45ed8887449bd3827b18b9debe, type: 2}
 --- !u!4 &2141041817
 Transform:
   m_ObjectHideFlags: 0
@@ -1006,6 +1011,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2141041818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2141041815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f80363eafa3c21a4180e22b5d59e50fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
