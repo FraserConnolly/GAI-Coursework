@@ -1,6 +1,12 @@
 ﻿using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// This implementation is based on Mat Buckland's implementation.
+/// The implementation has been tested however the anti cheat system 
+/// in use for this projects prevents direct changes to transform of 
+/// an agent. As such this behaviour can not be used.
+/// </summary>
 public class PreventOverlap : SteeringBehaviour
 {
     Map map;
@@ -17,6 +23,7 @@ public class PreventOverlap : SteeringBehaviour
         // nudging their transform directly. This happens in late update to 
         // ensure that other steering behaviours have completed before the 
         // nudge occours.
+        // Unfortunetly this 
         // This will only nudge Allied Units as Enemy units are outside of
         // my control in this assessment.
         return Vector3.zero;
@@ -24,12 +31,16 @@ public class PreventOverlap : SteeringBehaviour
 
     private void LateUpdate()
     {
+        ApplyNudging();
+    }
+
+    private void ApplyNudging()
+    {
 
         Vector3 startingPositionOfSelf = gameObject.transform.position;
 
         // do to replace this list with one coming from a spacial paritioning system.
-        var agents = GameData.Instance.allies.Where(a => a != null).ToList();
-        agents.AddRange(GameData.Instance.enemies.Where(e => e != null));
+        var agents = SpacialPartitioning.GetAllAgents();
 
         foreach (var agent in agents) 
         { 
@@ -41,16 +52,19 @@ public class PreventOverlap : SteeringBehaviour
 
             Vector3 toEntity = transform.position - agent.transform.position;
             float distanceFromEachOther = toEntity.magnitude;
-            float agentRadious = 0.45f; // to do should come from circle collider
 
-            float ammountOfOverlap =
-                agentRadious + // our radious 
-                agentRadious - // should be the radious of _agent but for this game we can assume all agents have the same radious.
-                distanceFromEachOther;
+            // In this game agent and target will have the same radious but
+            // I have left them as two seperate fields to allow this code
+            // to be more easily re-used should different agent sizes be
+            // implmented in the future.
+            float agentRadious = SteeringAgent.CollisionRadius;
+            float targetRadious = SteeringAgent.CollisionRadius;
+
+            float ammountOfOverlap = agentRadious + targetRadious - distanceFromEachOther;
 
             if ( ammountOfOverlap >= 0 )
             {
-                // nudging required
+                // nudging is required
 
                 var distanceToApply = (toEntity / toEntity.magnitude) * ammountOfOverlap;
                 transform.position += distanceToApply;
@@ -73,10 +87,7 @@ public class PreventOverlap : SteeringBehaviour
                         }
                     }
                 }
-            }
+            } // if ammountOfOverlap >= 0 
         }
-
-
-
     }
 }

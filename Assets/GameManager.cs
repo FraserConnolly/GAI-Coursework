@@ -58,9 +58,8 @@ public class GameManager : MonoBehaviour
 
             if (reloadOnLevelComplete)
             {
-            ReloadScene();
-            return;
-        }
+                ReloadScene();
+            }
         }
         else if (EnemyCount == 0)
         {
@@ -69,10 +68,8 @@ public class GameManager : MonoBehaviour
             Debug.Log("Allies have won!");
             Debug.Break();
             if (reloadOnLevelComplete)
-        {
-            Debug.Log("Enemies have won!");
-            Debug.Break();
-            ReloadScene();
+            {
+                ReloadScene();
             }
         }
     }
