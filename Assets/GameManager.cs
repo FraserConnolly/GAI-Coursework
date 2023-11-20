@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public static event Action OnSceneReload;
+
     public int AllyCount;
     public int EnemyCount;
 
@@ -20,6 +23,7 @@ public class GameManager : MonoBehaviour
 
     public void ReloadScene()
     {
+        OnSceneReload?.Invoke();
         SceneManager.LoadScene(0, LoadSceneMode.Single);
     }
 

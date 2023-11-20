@@ -5,7 +5,7 @@ using GCU.FraserConnolly.AI.SteeringBehaviours;
 
 public class AllyAgent : SteeringAgent
 {
-	private WeaponManager _weaponManager;
+	//private WeaponManager _weaponManager;
 	private Attack.AttackType attackType = Attack.AttackType.Gun;
 
 	// Steering Behaviours
@@ -17,14 +17,14 @@ public class AllyAgent : SteeringAgent
 
     protected override void InitialiseFromAwake()
 	{
-		_weaponManager = gameObject.AddComponent<WeaponManager>();
+		//_weaponManager = gameObject.AddComponent<WeaponManager>();
      
 		// steering behaviours
 		var mouse = gameObject.AddComponent<SeekToMouse>();
 		mouse.enabled = false;
 
         _seekToPointBehaviour = gameObject.AddComponent<SeekToPoint>();
-        gameObject.AddComponent<PreventOverlap>();
+        //gameObject.AddComponent<PreventOverlap>();
         gameObject.AddComponent<Seperation>();
         gameObject.AddComponent<Alignment>();
     }
