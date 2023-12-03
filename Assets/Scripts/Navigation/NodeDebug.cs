@@ -25,7 +25,7 @@ namespace GCU.FraserConnolly.AI.Navigation
                 {
                     Node neighbours = node.Neighbours[i];
 
-                    // This is because the world world coordinate of a node is in the bottom left
+                    // This is because the world coordinate of a node is in the bottom left
                     // of the grid square that is rendered for the node.
                     const float gridOffset = 0.5f;
 

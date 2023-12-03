@@ -1,19 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Navigation
 {
     public class Pathfinding
     {
-        public static IReadOnlyList<Vector2Int> GetPath ( Vector2Int startPoint, Vector2 Vector2Int, out int cost )
+        public static IReadOnlyList<Node> GetPath ( Vector2Int startPoint, Vector2Int endPoint, out int cost )
         {
+            cost = -1;
+            var nodes = Node.GetCopyOfAllNodes();
 
+            Node startNode, endNode;
 
+            startNode = Node.GetNodeAtPoint(startPoint, nodes);
+            endNode   = Node.GetNodeAtPoint(endPoint,   nodes);
 
-            cost = 0;
-            return new List<Vector2Int> ( );
+            if ( startNode == null )
+            {
+                Debug.Log("Start node not found");
+                return null;
+            }
+
+            if ( endNode == null)
+            {
+                Debug.Log("End node not found");
+                return null;
+            }
+            
+            var path = AStar ( startNode, endNode, EuclideanDistanceHeuristic);
+            //var path = AStar ( startNode, endNode, (int a, int b, int c, int d) => { return 0; } ) ;
+
+            cost = endNode.g;
+            return path;
         }
 
         private class PriorityQueueOfNodes
@@ -54,13 +75,13 @@ namespace GCU.FraserConnolly.AI.Navigation
 
         }
 
-        private List<Node> AStar(Node startNode, Node endNode, Func<int, int, int, int, int> heuristicFunction)
+        private static List<Node> AStar(Node startNode, Node endNode, Func<int, int, int, int, int> heuristicFunction)
         {
             PriorityQueueOfNodes openList = new PriorityQueueOfNodes(node => node.f);
             List<Node> closedList = new List<Node>();
 
             openList.Push(startNode);    // This is a priority queue
-            int visitOrder = 0; // DEBUG CODE: Used to assign order a node has been seen for to node derbugging purposes. Would not bbe used in production code
+            int visitOrder = 0; // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not be used in production code
 
             while (openList.Count > 0)
             {
@@ -97,19 +118,19 @@ namespace GCU.FraserConnolly.AI.Navigation
                 }
             }
 
-            Debug.LogError("Failed to find a route using Dijkstra");
+            Debug.LogWarning("Failed to find a route using Dijkstra");
 
             // No path has been found
             return GetFoundPath(null);
         }
 
-        private int ChebyshevDistanceHeuristic(int currentX, int currentY, int targetX, int targetY)
+        private static int ChebyshevDistanceHeuristic(int currentX, int currentY, int targetX, int targetY)
         {
             var distance = Mathf.Max(Mathf.Abs(targetY - currentY), Mathf.Abs(targetX - currentX));
             return distance * 10; // multiply by 10 as the grid world is 10 times larger than the coordinate system.
         }
 
-        private int EuclideanDistanceHeuristic(int currentX, int currentY, int targetX, int targetY)
+        private static int EuclideanDistanceHeuristic(int currentX, int currentY, int targetX, int targetY)
         {
             var distance = MathF.Sqrt(
                 ((targetX - currentX) * (targetX - currentX)) +
@@ -119,7 +140,7 @@ namespace GCU.FraserConnolly.AI.Navigation
             return (int)distance * 10; // multiply by 10 as the grid world is 10 times larger than the coordinate system.
         }
 
-        private int ManhattanDistanceHeuristic(int currentX, int currentY, int targetX, int targetY)
+        private static int ManhattanDistanceHeuristic(int currentX, int currentY, int targetX, int targetY)
         {
             var distance = MathF.Abs(currentX - targetX) + MathF.Abs(currentY - targetY);
             return (int)distance * 10; // multiply by 10 as the grid world is 10 times larger than the coordinate system.

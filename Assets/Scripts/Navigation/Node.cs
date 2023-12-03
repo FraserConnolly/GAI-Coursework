@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Navigation
 {
-    internal class Node
+    public class Node
     {
         public Vector2Int Coordinate { get; private set; }
         public Map.Terrain Terrain { get; private set; }
@@ -50,10 +50,11 @@ namespace GCU.FraserConnolly.AI.Navigation
 
         private static void BuildNodes ()
         {
-            if ( s_Nodes != null )
-            {
-                return;
-            }
+            // temp disabled for debugging.
+            //if ( s_Nodes != null )
+            //{
+            //    return;
+            //}
 
             s_Nodes = new Node[ Map.MapSize ];
 
@@ -206,6 +207,21 @@ namespace GCU.FraserConnolly.AI.Navigation
 
             // to do - check that this is a copy of the nodes list
             return s_Nodes.ToList();
+        }
+
+        public static Node GetNodeAtPoint ( Vector2Int point, IReadOnlyList<Node> nodes )
+        {
+            //   return nodes.Where( n => n.Coordinate == point ).FirstOrDefault();
+
+            foreach (var item in nodes)
+            {
+                if ( item.Coordinate.x == point.x && item.Coordinate.y == point.y )
+                {
+                    return item;
+                }
+            }
+
+            return null;
         }
 
         private static void OnSceneReload()
