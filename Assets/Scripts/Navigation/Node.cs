@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -50,11 +51,13 @@ namespace GCU.FraserConnolly.AI.Navigation
 
         private static void BuildNodes ()
         {
-            // temp disabled for debugging.
-            //if ( s_Nodes != null )
-            //{
-            //    return;
-            //}
+
+            if (s_Nodes != null)
+            {
+                return;
+            }
+
+            Debug.Log("Building nodes");
 
             s_Nodes = new Node[ Map.MapSize ];
 
@@ -201,27 +204,16 @@ namespace GCU.FraserConnolly.AI.Navigation
             return connectedNodesCount;
         }
 
-        public static IReadOnlyList<Node> GetCopyOfAllNodes()
+        public static IReadOnlyList<Node> GetAllNodes()
         {
             BuildNodes();
 
-            // to do - check that this is a copy of the nodes list
-            return s_Nodes.ToList();
+            return s_Nodes;
         }
 
         public static Node GetNodeAtPoint ( Vector2Int point, IReadOnlyList<Node> nodes )
         {
-            //   return nodes.Where( n => n.Coordinate == point ).FirstOrDefault();
-
-            foreach (var item in nodes)
-            {
-                if ( item.Coordinate.x == point.x && item.Coordinate.y == point.y )
-                {
-                    return item;
-                }
-            }
-
-            return null;
+            return nodes.Where( n => n.Coordinate == point ).FirstOrDefault();
         }
 
         private static void OnSceneReload()
@@ -229,5 +221,10 @@ namespace GCU.FraserConnolly.AI.Navigation
             ClearNodes();
         }
 
+        internal void clearTempData()
+        {
+            g = 0;
+            h = 0;
+        }
     }
 }

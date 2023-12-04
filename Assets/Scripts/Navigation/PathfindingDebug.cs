@@ -1,9 +1,7 @@
 ﻿using com.cyborgAssets.inspectorButtonPro;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace GCU.FraserConnolly.AI.Navigation
 {
@@ -20,10 +18,13 @@ namespace GCU.FraserConnolly.AI.Navigation
 
         void Update ()
         {
+            transform.position = Vector3.zero;
+
             if (_startTransform == null)
             {
                 var go = new GameObject("start");
                 go.transform.SetParent(transform);
+                go.transform.position = Vector3.zero;
                 _startTransform = go.transform;
             }
 
@@ -31,23 +32,36 @@ namespace GCU.FraserConnolly.AI.Navigation
             {
                 var go = new GameObject("end");
                 go.transform.SetParent(transform);
+                go.transform.position = Vector3.zero;
                 _endTransform = go.transform;
             }
+
+            Vector2Int temp = new Vector2Int( );
 
             if ( _startPoint != _startTransform.position )
             {
                 _startPoint = _startTransform.position;
-                isDirty = true;
-                _startNode.x = (int)_startPoint.x;
-                _startNode.y = (int)_startPoint.y;
+                temp.x = (int)_startPoint.x;
+                temp.y = (int)_startPoint.y;
+
+                if ( temp != _startNode )
+                {
+                    isDirty = true;
+                    _startNode = temp;
+                }
             }
 
             if (_endPoint != _endTransform.position)
             {
                 _endPoint = _endTransform.position;
-                isDirty = true;
-                _endNode.x = (int)_endPoint.x;
-                _endNode.y = (int)_endPoint.y;
+                temp.x = (int)_endPoint.x;
+                temp.y = (int)_endPoint.y;
+
+                if (temp != _endNode)
+                {
+                    isDirty = true;
+                    _endNode = temp;
+                }
             }
 
             if ( isDirty )
@@ -77,6 +91,7 @@ namespace GCU.FraserConnolly.AI.Navigation
             }
 
             _path = Pathfinding.GetPath(_startNode, _endNode, out _cost);
+            Debug.Log($"Getting path between ({_startNode.x}, {_startNode.y}) and ({_endNode.x}, {_endNode.y}). Cost = {_cost}; points = {_path?.Count ?? 0}");
         }
 
         private void OnDrawGizmos()

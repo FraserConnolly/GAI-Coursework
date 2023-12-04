@@ -11,7 +11,15 @@ namespace GCU.FraserConnolly.AI.Navigation
         public static IReadOnlyList<Node> GetPath ( Vector2Int startPoint, Vector2Int endPoint, out int cost )
         {
             cost = -1;
-            var nodes = Node.GetCopyOfAllNodes();
+            
+            // check if either the start or end point is not navigable.
+            if ( ! GameData.Instance.Map.IsNavigatable(startPoint.x, startPoint.y) 
+              || ! GameData.Instance.Map.IsNavigatable(endPoint.x,   endPoint.y  ) )
+            {
+                return null;
+            }
+
+            var nodes = Node.GetAllNodes();
 
             Node startNode, endNode;
 
@@ -31,7 +39,6 @@ namespace GCU.FraserConnolly.AI.Navigation
             }
             
             var path = AStar ( startNode, endNode, EuclideanDistanceHeuristic);
-            //var path = AStar ( startNode, endNode, (int a, int b, int c, int d) => { return 0; } ) ;
 
             cost = endNode.g;
             return path;

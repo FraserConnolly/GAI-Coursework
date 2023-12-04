@@ -9,7 +9,7 @@ namespace GCU.FraserConnolly.AI.Navigation
 
         private void Start()
         {
-            _nodes = Node.GetCopyOfAllNodes();
+            _nodes = Node.GetAllNodes();
         }
 
         private void OnDrawGizmosSelected()
