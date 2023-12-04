@@ -43,6 +43,16 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if ( Input.GetKeyUp (KeyCode.F2))
+        {
+            // disable enemies
+            var enemies = FindObjectsOfType<EnemyAgent>();
+            foreach (var item in enemies)
+            {
+                item.gameObject.SetActive(false);
+            }
+        }
+
         if ( levelComplete  )
         {
             return;
