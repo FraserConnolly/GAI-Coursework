@@ -18,18 +18,20 @@ public class MapRenderer : MonoBehaviour
 	private int mapDataHeight;
 	private float squareWidth;
 	private float squareHeight;
+	private bool showGrid;
 
 	private Mesh mesh;
 	private MeshFilter meshFilter;
 	private MeshRenderer meshRenderer;
 
-	public void Initialise(byte[] mapData, int mapDataWidth, int mapDataHeight)
+	public void Initialise(byte[] mapData, int mapDataWidth, int mapDataHeight, bool showGrid = true)
 	{
 		this.mapData = mapData;
 		this.mapDataWidth = mapDataWidth;
 		this.mapDataHeight = mapDataHeight;
 		squareWidth = MapWidthInWorld / (float)mapDataWidth;
 		squareHeight = MapHeightInWorld / (float)mapDataHeight;
+		this.showGrid = showGrid;
 
 		CreateGridLines();
 		CreateMesh();
@@ -125,6 +127,8 @@ public class MapRenderer : MonoBehaviour
 
 		GridRenderer grid = gridLines2DGameObject.AddComponent<GridRenderer>();
 		grid.Initialise(mapDataWidth, mapDataHeight, MapWidthInWorld, MapHeightInWorld, 0.5f * (MapHeightInWorld / 1080));
+
+		gridLines2DGameObject.SetActive(showGrid);
 	}
 
 	private GameObject CreateTargetPoint(GameObject prefab, string name, int x, int y, Color color)

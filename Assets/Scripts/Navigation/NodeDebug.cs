@@ -5,34 +5,53 @@ namespace GCU.FraserConnolly.AI.Navigation
 {
     public class NodeDebug : MonoBehaviour
     {
-        IReadOnlyList<Node> _nodes = null;
-
-        private void Start()
+        public static Map getMap()
         {
-            _nodes = Node.GetAllNodes();
+            var mapTester = FindAnyObjectByType<MapDebug>();
+            if (mapTester != null)
+            {
+                return mapTester.map;
+            }
+            else
+            {
+                return GameData.Instance?.Map ?? null;
+            }
         }
 
         private void OnDrawGizmosSelected()
         {
-            if ( _nodes == null ) 
-            { 
-                return;
-            }
+            IReadOnlyList<Node> nodes;
 
-            foreach ( Node node in _nodes ) 
+            //var mapTester = FindAnyObjectByType<MapDebug>();
+            //if (mapTester != null)
+            //{
+            //    nodes = Node.GetAllNodes(mapTester.map);
+            //}
+            //else
+            //{
+            //    nodes = Node.GetAllNodes();
+            //}
+
+            nodes = Node.GetAllNodes(getMap());
+
+            // Convert the local coordinate values into world
+            // coordinates for the matrix transformation.
+            Gizmos.matrix = transform.localToWorldMatrix;
+
+            foreach ( Node node in nodes ) 
             {
-                for ( int i = 0; i < node.Neighbours.Count; i++ )
+                for ( int i = 0; i < node.Neighbors.Count; i++ )
                 {
-                    Node neighbours = node.Neighbours[i];
+                    Node neighbours = node.Neighbors[i];
 
                     // This is because the world coordinate of a node is in the bottom left
                     // of the grid square that is rendered for the node.
                     const float gridOffset = 0.5f;
 
-                    Vector3 lineStart = new Vector3(node.Coordinate.x + gridOffset, node.Coordinate.y + gridOffset, 0f);
-                    Vector3 lineEnd = new Vector3(neighbours.Coordinate.x + gridOffset, neighbours.Coordinate.y + gridOffset, 0f);
+                    Vector3 lineStart = new Vector3(0f, node.Coordinate.x + gridOffset, node.Coordinate.y + gridOffset);
+                    Vector3 lineEnd = new Vector3(0f, neighbours.Coordinate.x + gridOffset, neighbours.Coordinate.y + gridOffset);
 
-                    switch (node.neighbourCosts[i])
+                    switch (node.neighborCosts[i])
                     {
                         case 20: // grass to grass
                         case 2*14: // grass to grass diagonal

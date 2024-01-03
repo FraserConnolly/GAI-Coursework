@@ -113,7 +113,7 @@ namespace GCU.FraserConnolly.AI.Navigation
                 Vector3 lineStart = new Vector3(node.Coordinate.x + gridOffset, node.Coordinate.y + gridOffset, 0f);
                 Vector3 lineEnd = new Vector3(nextNode.Coordinate.x + gridOffset, nextNode.Coordinate.y + gridOffset, 0f);
 
-                //switch (node.neighbourCosts[i])
+                //switch (node.neighborCosts[i])
                 //{
                 //    case 20: // grass to grass
                 //    case 2 * 14: // grass to grass diagonal

@@ -25,8 +25,8 @@ public class AllyAgent : SteeringAgent
 
         _seekToPointBehaviour = gameObject.AddComponent<SeekToPoint>();
         //gameObject.AddComponent<PreventOverlap>();
-        gameObject.AddComponent<Seperation>();
-        gameObject.AddComponent<Alignment>();
+        //gameObject.AddComponent<Seperation>();
+        //gameObject.AddComponent<Alignment>();
     }
 
 	protected override void CooperativeArbitration()

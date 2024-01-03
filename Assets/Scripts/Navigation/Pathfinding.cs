@@ -100,16 +100,16 @@ namespace GCU.FraserConnolly.AI.Navigation
                     return GetFoundPath(endNode);
                 }
 
-                for (int neighbourIndex = 0; neighbourIndex < currentNode.Neighbours.Count(); neighbourIndex++)
+                for (int neighbourIndex = 0; neighbourIndex < currentNode.Neighbors.Count(); neighbourIndex++)
                 {
-                    Node currentNeighbour = currentNode.Neighbours[neighbourIndex];
+                    Node currentNeighbour = currentNode.Neighbors[neighbourIndex];
 
                     if ( closedList.Contains(currentNeighbour) )
                     {
                         continue;
                     }
 
-                    var g = currentNode.g + currentNode.neighbourCosts[neighbourIndex]; //cost to childNode from currentNode
+                    var g = currentNode.g + currentNode.neighborCosts[neighbourIndex]; //cost to childNode from currentNode
                     var h = heuristicFunction(currentNeighbour.Coordinate.x, currentNeighbour.Coordinate.y, endNode.Coordinate.x, endNode.Coordinate.y);
                     if (g + h <= currentNeighbour.f || !openList.OnList(currentNeighbour))
                     {
