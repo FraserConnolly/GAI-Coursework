@@ -1,8 +1,7 @@
 ﻿
-using GCU.FraserConnolly.AI.Fuzzy;
-using System;
+using UnityEngine;
 
-namespace Assets.Scripts.Fuzzy
+namespace GCU.FraserConnolly.AI.Fuzzy
 {
     //-----------------------------------------------------------------------------
     //
@@ -19,7 +18,7 @@ namespace Assets.Scripts.Fuzzy
 
         private FzVery(FzVery inst) { m_Set = inst.m_Set; }
 
-        public override double GetDOM()
+        public override float GetDOM()
         {
             return m_Set.GetDOM() * m_Set.GetDOM();
         }
@@ -34,7 +33,7 @@ namespace Assets.Scripts.Fuzzy
             m_Set.ClearDOM();
         }
 
-        public override void ORwithDOM(double val)
+        public override void ORwithDOM(float val)
         {
             m_Set.ORwithDOM(val * val);
         }
@@ -49,9 +48,9 @@ namespace Assets.Scripts.Fuzzy
 
         private FzFairly(FzFairly inst) { m_Set = inst.m_Set; }
 
-        public override double GetDOM()
+        public override float GetDOM()
         {
-            return Math.Sqrt(m_Set.GetDOM());
+            return Mathf.Sqrt(m_Set.GetDOM());
         }
 
         public override FuzzyTerm Clone()
@@ -64,9 +63,9 @@ namespace Assets.Scripts.Fuzzy
             m_Set.ClearDOM();
         }
 
-        public override void ORwithDOM(double val)
+        public override void ORwithDOM(float val)
         {
-            m_Set.ORwithDOM(Math.Sqrt(val));
+            m_Set.ORwithDOM(Mathf.Sqrt(val));
         }
     }
 }

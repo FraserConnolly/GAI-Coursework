@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
@@ -13,32 +14,41 @@ namespace GCU.FraserConnolly.AI.Fuzzy
     {
 
         //the values that define the shape of this FLV
-        private double m_dMidPoint;
-        private double m_dLeftOffset;
-        private double m_dRightOffset;
+        [SerializeField]
+        private float _MidPoint;
+        [SerializeField]
+        private float _LeftOffset;
+        [SerializeField]
+        private float _RightOffset;
 
-        public FuzzySet_Singleton(double mid, double lft, double rgt) : base(mid)
+        public void Initialise(string name, float mid, float left, float right)
         {
-            m_dMidPoint = mid;
-            m_dLeftOffset = lft;
-            m_dRightOffset = rgt;
+            base.Initialise(name, mid);
+            _MidPoint = mid;
+            _LeftOffset = left;
+            _RightOffset = right;
         }
         
-
         //this method calculates the degree of membership for a particular value
-        public override double CalculateDOM(double val)
+        public override float CalculateDOM(float val)
         {
-            if ((val >= m_dMidPoint - m_dLeftOffset) &&
-                 (val <= m_dMidPoint + m_dRightOffset))
+            if ((val >= _MidPoint - _LeftOffset) &&
+                 (val <= _MidPoint + _RightOffset))
             {
-                return 1.0;
+                return 1.0f;
             }
 
             //out of range of this FLV, return zero
             else
             {
-                return 0.0;
+                return 0.0f;
             }
+        }
+
+        public override void GetValueRange(out float min, out float max)
+        {
+            min = _MidPoint - _LeftOffset;
+            max = _MidPoint + _RightOffset;
         }
     }
 }

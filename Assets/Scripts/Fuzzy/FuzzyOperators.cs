@@ -1,7 +1,5 @@
-﻿using GCU.FraserConnolly.AI.Fuzzy;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
@@ -72,9 +70,9 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //
         //  the AND operator returns the minimum DOM of the sets it is operating on
         //-----------------------------------------------------------------------------
-        public override double GetDOM()
+        public override float GetDOM()
         {
-            double smallest = double.MaxValue;
+            float smallest = float.MaxValue;
 
             foreach (var curTerm in m_Terms)
             {
@@ -88,7 +86,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         }
 
         //------------------------- ORwithDOM -----------------------------------------
-        public override void ORwithDOM(double val)
+        public override void ORwithDOM(float val)
         {
             foreach (var curTerm in m_Terms)
             {
@@ -166,9 +164,9 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //
         //  the OR operator returns the maximum DOM of the sets it is operating on
         //----------------------------------------------------------------------------- 
-        public override double GetDOM()
+        public override float GetDOM()
         {
-            double largest = float.MinValue;
+            float largest = float.MinValue;
 
             foreach (var curTerm in m_Terms)
             {
@@ -187,7 +185,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             Debug.LogWarning("<FzOR::ClearDOM>: invalid context");
         }
 
-        public override void ORwithDOM(double val)
+        public override void ORwithDOM(float val)
         {
             Debug.LogWarning("<FzOR::ORwithDOM>: invalid context");
         }

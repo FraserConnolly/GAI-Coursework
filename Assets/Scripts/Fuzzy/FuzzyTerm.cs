@@ -18,13 +18,13 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         public abstract FuzzyTerm Clone();
 
         //retrieves the degree of membership of the term
-        public abstract double GetDOM();
+        public abstract float GetDOM();
 
         //clears the degree of membership of the term
         public abstract void ClearDOM();
 
         //method for updating the DOM of a consequent when a rule fires
-        public abstract void ORwithDOM(double val);
+        public abstract void ORwithDOM(float val);
 
     }
 }

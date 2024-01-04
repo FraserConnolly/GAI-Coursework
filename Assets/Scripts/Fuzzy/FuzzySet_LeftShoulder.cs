@@ -14,49 +14,67 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //-----------------------------------------------------------------------------
 
         //the values that define the shape of this FLV
-        private double m_dPeakPoint;
-        private double m_dRightOffset;
-        private double m_dLeftOffset;
+        [SerializeField]
+        private float _PeakPoint;
+        [SerializeField]
+        private float _RightOffset;
+        [SerializeField]
+        private float _LeftOffset;
 
-        public FuzzySet_LeftShoulder(double peak, double LeftOffset, double RightOffset)
-            : base(((peak - LeftOffset) + peak) / 2)
+        public void Initialise(string name, float peak, float LeftOffset, float RightOffset)
         {
-            m_dPeakPoint = peak;
-            m_dLeftOffset = LeftOffset;
-            m_dRightOffset = RightOffset;
+            base.Initialise(name, ((peak - 1f) + peak) / 2f);
+            _PeakPoint = peak;
+            _LeftOffset = LeftOffset;
+            _RightOffset = RightOffset;
         }
 
         //this method calculates the degree of membership for a particular value
-        public override double CalculateDOM(double val)
+        public override float CalculateDOM(float val)
         {
             //test for the case where the left or right offsets are zero
             //(to prevent divide by zero errors below)
-            if (((m_dRightOffset == 0.0) && ((m_dPeakPoint == val))) ||
-                 ((m_dLeftOffset == 0.0) && ((m_dPeakPoint == val))))
+            if (((_RightOffset == 0.0) && ((_PeakPoint == val))) ||
+                 ((_PeakPoint == val)))
             {
-                return 1.0;
+                return 1.0f;
             }
 
             //find DOM if right of center
-            else if ((val >= m_dPeakPoint) && (val < (m_dPeakPoint + m_dRightOffset)))
+            else if ((val >= _PeakPoint) && (val < (_PeakPoint + _RightOffset)))
             {
-                double grad = 1.0 / -m_dRightOffset;
+                float grad = 1.0f / -_RightOffset;
 
-                return grad * (val - m_dPeakPoint) + 1.0;
+                return grad * (val - _PeakPoint) + 1.0f;
             }
 
             //find DOM if left of center
-            else if ((val < m_dPeakPoint) && (val >= m_dPeakPoint - m_dLeftOffset))
+            else if ((val < _PeakPoint) && (val >= _PeakPoint - _LeftOffset))
             {
-                return 1.0;
+                return 1.0f;
             }
 
             //out of range of this FLV, return zero
             else
             {
-                return 0.0;
+                return 0.0f;
             }
 
+        }
+        protected override void OnValidate()
+        {
+            base.OnValidate();
+
+            if (_LeftOffset < 0f)
+            {
+                _LeftOffset = 0f;
+            }
+        }
+
+        public override void GetValueRange(out float min, out float max)
+        {
+            min = _PeakPoint - _LeftOffset;
+            max = _PeakPoint + _RightOffset;
         }
     }
 }

@@ -23,7 +23,7 @@
             return new FzSet(this);
         }
 
-        public override double GetDOM()
+        public override float GetDOM()
         {
             return m_Set.GetDOM();
         }
@@ -33,7 +33,7 @@
             m_Set.ClearDOM();
         }
 
-        public override void ORwithDOM(double val)
+        public override void ORwithDOM(float val)
         {
             m_Set.ORwithDOM(val);
         }

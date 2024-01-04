@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -16,26 +16,60 @@ namespace GCU.FraserConnolly.AI.Fuzzy
     //          An FLV comprises of a number of fuzzy sets  
     //
     //-----------------------------------------------------------------------------
-    public class FuzzyVariable
+    public class FuzzyVariable : MonoBehaviour
     {
-
         //the minimum and maximum value of the range of this variable
-        private double m_dMinRange;
-        private double m_dMaxRange;
+        [SerializeField]
+        [Tooltip("Readonly - Calculated based on the valid ranges of the Fuzzy Sets for this variable.")]
+        private float _MinRange;
 
+        public float MinRange => _MinRange;
+
+        [SerializeField]
+        [Tooltip("Readonly - Calculated based on the valid ranges of the Fuzzy Sets for this variable.")]
+        private float _MaxRange;
+        
+        public float MaxRange => _MaxRange;
+
+
+        [SerializeField]
+        private string _name;
+
+        public string VariableName => _name;
 
         //a map of the fuzzy sets that comprise this variable
-        private Dictionary<string, FuzzySet> m_MemberSets;
+        private FuzzySet[] _Sets;
 
-        //---------------------------- AdjustRangeToFit -------------------------------
-        //
-        //  this method is called with the upper and lower bound of a set each time a
-        //  new set is added to adjust the upper and lower range values accordingly
-        //-----------------------------------------------------------------------------
-        private void AdjustRangeToFit(double minBound, double maxBound)
+        public IReadOnlyCollection<FuzzySet> GetSets() => _Sets;
+
+        public void UpdateSets()
         {
-            if (minBound < m_dMinRange) m_dMinRange = minBound;
-            if (maxBound > m_dMaxRange) m_dMaxRange = maxBound;
+            _Sets = GetComponents<FuzzySet>();
+
+            if ( ! _Sets.Any() )
+            {
+                _MaxRange = 1f;
+                _MinRange = 0f;
+                return;
+            }
+
+            _MaxRange = float.MinValue;
+            _MinRange = float.MaxValue;
+
+            foreach (FuzzySet set in _Sets)
+            {
+                set.GetValueRange(out float min, out float max);
+
+                if ( max > _MaxRange )
+                {
+                    _MaxRange = max;
+                }
+
+                if ( min < _MinRange )
+                {
+                    _MinRange = min;
+                }
+            }
         }
 
         //--------------------------- Fuzzify -----------------------------------------
@@ -43,33 +77,42 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //  takes a crisp value and calculates its degree of membership for each set
         //  in the variable.
         //-----------------------------------------------------------------------------
-        public void Fuzzify(double val)
+        public void Fuzzify(float val)
         {
+            if ( _Sets == null )
+            {
+                UpdateSets();
+            }
+
             //make sure the value is within the bounds of this variable
-            if ((val >= m_dMinRange) && (val <= m_dMaxRange))
+            if (!((val >= _MinRange) && (val <= _MaxRange)))
             {
                 Debug.Log("<FuzzyVariable::Fuzzify>: value out of range");
             }
 
-            //for each set in the flv calculate the DOM for the given value
-            foreach (var curSet in m_MemberSets)
+            //for each set in the FLV calculate the DOM for the given value
+            foreach (var curSet in _Sets)
             {
-                curSet.Value.SetDOM(curSet.Value.CalculateDOM(val));
+                curSet.SetDOM(curSet.CalculateDOM(val));
             }
         }
-
 
         //------------------------- DeFuzzifyCentroid ---------------------------------
         //
         //  defuzzify the variable using the centroid method
         //-----------------------------------------------------------------------------
-        public double DeFuzzifyCentroid(int NumSamples)
+        public float DeFuzzifyCentroid(int NumSamples)
         {
-            //calculate the step size
-            double StepSize = (m_dMaxRange - m_dMinRange) / (double)NumSamples;
+            if (_Sets == null)
+            {
+                UpdateSets();
+            }
 
-            double TotalArea = 0.0;
-            double SumOfMoments = 0.0;
+            //calculate the step size
+            float StepSize = (_MaxRange - _MinRange) / NumSamples;
+
+            float TotalArea = 0.0f;
+            float SumOfMoments = 0.0f;
 
             //step through the range of this variable in increments equal to StepSize
             //adding up the contribution (lower of CalculateDOM or the actual DOM of this
@@ -86,21 +129,21 @@ namespace GCU.FraserConnolly.AI.Fuzzy
                 //for each set get the contribution to the area. This is the lower of the 
                 //value returned from CalculateDOM or the actual DOM of the fuzzified 
                 //value itself   
-                foreach (var curSet in m_MemberSets)
+                foreach (var curSet in _Sets)
                 {
-                    double contribution = Math.Min(curSet.Value.CalculateDOM(m_dMinRange + samp * StepSize),
-                              curSet.Value.GetDOM());
+                    float contribution = Mathf.Min(curSet.CalculateDOM(_MinRange + samp * StepSize),
+                              curSet.GetDOM());
 
                     TotalArea += contribution;
 
-                    SumOfMoments += (m_dMinRange + samp * StepSize) * contribution;
+                    SumOfMoments += (_MinRange + samp * StepSize) * contribution;
                 }
             }
 
             //make sure total area is not equal to zero
-            if (0d == TotalArea)
+            if (0f == TotalArea)
             {
-                return 0.0;
+                return 0.0f;
             }
 
             return (SumOfMoments / TotalArea);
@@ -112,22 +155,27 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //
         // OUTPUT = sum (maxima * DOM) / sum (DOMs) 
         //-----------------------------------------------------------------------------
-        public double DeFuzzifyMaxAv()
+        public float DeFuzzifyMaxAv()
         {
-            double bottom = 0.0;
-            double top = 0.0;
-
-            foreach ( var curSet in m_MemberSets)
+            if (_Sets == null)
             {
-                bottom += curSet.Value.GetDOM();
+                UpdateSets();
+            }
 
-                top += curSet.Value.GetRepresentativeVal() * curSet.Value.GetDOM();
+            float bottom = 0.0f;
+            float top = 0.0f;
+
+            foreach ( var curSet in _Sets)
+            {
+                bottom += curSet.GetDOM();
+
+                top += curSet.GetRepresentativeVal() * curSet.GetDOM();
             }
 
             //make sure bottom is not equal to zero
             if (0 == bottom)
             {
-                return 0.0;
+                return 0.0f;
             }
 
             return top / bottom;
@@ -140,22 +188,20 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //proxy set can be used as an operand when creating the rule base.
 
 
+
         //------------------------- AddTriangularSet ----------------------------------
         //
         //  adds a triangular shaped fuzzy set to the variable
         //-----------------------------------------------------------------------------
         public FzSet AddTriangularSet(string name,
-                                             double minBound,
-                                             double peak,
-                                             double maxBound)
-        { 
-            m_MemberSets[name] = new FuzzySet_Triangle(peak,
-                                                       peak - minBound,
-                                                       maxBound - peak);
-            //adjust range if necessary
-            AdjustRangeToFit(minBound, maxBound);
-
-            return new FzSet(m_MemberSets[name]);
+                                             float minBound,
+                                             float peak,
+                                             float maxBound)
+        {
+            var set = gameObject.AddComponent<FuzzySet_Triangle>();
+            set.Initialise(name, peak, peak - minBound, maxBound - peak);
+            UpdateSets();
+            return new FzSet( set );
         }
 
         //--------------------------- AddLeftShoulder ---------------------------------
@@ -163,16 +209,14 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //  adds a left shoulder type set
         //-----------------------------------------------------------------------------
         public FzSet AddLeftShoulderSet( string name,
-                                                double minBound,
-                                                double peak,
-                                                double maxBound)
+                                                float minBound,
+                                                float peak,
+                                                float maxBound)
         {
-            m_MemberSets[name] = new FuzzySet_LeftShoulder(peak, peak - minBound, maxBound - peak);
-
-            //adjust range if necessary
-            AdjustRangeToFit(minBound, maxBound);
-
-            return new FzSet(m_MemberSets[name]);
+            var set = gameObject.AddComponent<FuzzySet_LeftShoulder>();
+            set.Initialise(name, peak, peak - minBound, maxBound - peak);
+            UpdateSets();
+            return new FzSet( set );
         }
 
 
@@ -181,16 +225,14 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //  adds a left shoulder type set
         //-----------------------------------------------------------------------------
         public FzSet AddRightShoulderSet(string name,
-                                                 double minBound,
-                                                 double peak,
-                                                 double maxBound)
+                                                 float minBound,
+                                                 float peak,
+                                                 float maxBound)
         {
-            m_MemberSets[name] = new FuzzySet_RightShoulder(peak, peak - minBound, maxBound - peak);
-
-            //adjust range if necessary
-            AdjustRangeToFit(minBound, maxBound);
-
-            return new FzSet( m_MemberSets[ name ] );
+            var set = gameObject.AddComponent<FuzzySet_RightShoulder>();
+            set.Initialise(name, peak, peak - minBound, maxBound - peak);
+            UpdateSets();
+            return new FzSet( set );
         }
 
         //--------------------------- AddSingletonSet ---------------------------------
@@ -198,28 +240,54 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //  adds a singleton to the variable
         //-----------------------------------------------------------------------------
         public FzSet AddSingletonSet( string name,
-                                            double minBound,
-                                            double peak,
-                                            double maxBound)
+                                            float minBound,
+                                            float peak,
+                                            float maxBound)
         {
-            m_MemberSets[name] = new FuzzySet_Singleton(peak,
-                                                        peak - minBound,
-                                                        maxBound - peak);
-
-            AdjustRangeToFit(minBound, maxBound);
-
-            return new FzSet( m_MemberSets[ name ] );
+            var set = gameObject.AddComponent<FuzzySet_Singleton>();
+            set.Initialise(name, peak, peak - minBound, maxBound - peak);
+            UpdateSets();
+            return new FzSet( set );
         }
 
         //---------------------------- WriteDOMs --------------------------------------
         public void WriteDOMs(StringBuilder log)
         {
-            foreach (var it in m_MemberSets)
+            foreach (var it in _Sets)
             {
-                log.AppendLine($"{it.Key} is {it.Value.GetDOM()}");
+                log.AppendLine($"{it.name} is {it.GetDOM()}");
             }
 
-            log.AppendLine($"Min Range: {m_dMinRange} Max Range: {m_dMaxRange} ");
+            log.AppendLine($"Min Range: {_MinRange} Max Range: {_MaxRange} ");
+        }
+
+        public void SetName( string name )
+        {
+            _name = name;
+        }
+
+        public float SumOfMembership(float val)
+        {
+            //make sure the value is within the bounds of this variable
+            if (!((val >= _MinRange) && (val <= _MaxRange)))
+            {
+                Debug.Log("<FuzzyVariable::SumOfMembership>: value out of range");
+            }
+
+            float sum = 0f;
+
+            //for each set in the FLV calculate the DOM for the given value
+            foreach (var curSet in _Sets)
+            {
+                sum += curSet.CalculateDOM(val);
+            }
+
+            return sum;
+        }
+
+        public void OnValidate()
+        {
+            UpdateSets();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+﻿using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
@@ -13,49 +13,60 @@ namespace GCU.FraserConnolly.AI.Fuzzy
     public class FuzzySet_Triangle : FuzzySet
     {
         //the values that define the shape of this FLV
-        double m_dPeakPoint;
-        double m_dLeftOffset;
-        double m_dRightOffset;
+        [SerializeField]
+        float _PeakPoint;
+        
+        [SerializeField]
+        float _LeftOffset;
+        
+        [SerializeField]
+        float _RightOffset;
 
-
-        public FuzzySet_Triangle(double mid, double lft, double rgt) : base(mid)
+        public void Initialise (string name, float mid, float left, float right)
         {
-            m_dPeakPoint = mid;
-            m_dLeftOffset = lft;
-            m_dRightOffset = rgt;
+            base.Initialise(name, mid);
+            _PeakPoint = mid;
+            _LeftOffset = left;
+            _RightOffset = right;
         }
 
 
         //this method calculates the degree of membership for a particular value
-        public override double CalculateDOM(double val)
+        public override float CalculateDOM(float val)
         {
             //test for the case where the triangle's left or right offsets are zero
             //(to prevent divide by zero errors below)
-            if ((m_dRightOffset == 0.0 && m_dPeakPoint == val) ||
-                 (m_dLeftOffset == 0.0 && m_dPeakPoint == val))
+            if ((_RightOffset == 0.0 && _PeakPoint == val) ||
+                 (_LeftOffset == 0.0 && _PeakPoint == val))
             {
-                return 1.0;
+                return 1.0f;
             }
 
             //find DOM if left of center
-            if ((val <= m_dPeakPoint) && (val >= (m_dPeakPoint - m_dLeftOffset)))
+            if ((val <= _PeakPoint) && (val >= (_PeakPoint - _LeftOffset)))
             {
-                double grad = 1.0 / m_dLeftOffset;
+                float grad = 1.0f / _LeftOffset;
 
-                return grad * (val - (m_dPeakPoint - m_dLeftOffset));
+                return grad * (val - (_PeakPoint - _LeftOffset));
             }
             //find DOM if right of center
-            else if ((val > m_dPeakPoint) && (val < (m_dPeakPoint + m_dRightOffset)))
+            else if ((val > _PeakPoint) && (val < (_PeakPoint + _RightOffset)))
             {
-                double grad = 1.0 / -m_dRightOffset;
+                float grad = 1.0f / -_RightOffset;
 
-                return grad * (val - m_dPeakPoint) + 1.0;
+                return grad * (val - _PeakPoint) + 1.0f;
             }
             //out of range of this FLV, return zero
             else
             {
-                return 0.0;
+                return 0.0f;
             }
+        }
+
+        public override void GetValueRange(out float min, out float max)
+        {
+            min = _PeakPoint - _LeftOffset;
+            max = _PeakPoint + _RightOffset;
         }
     }
 }

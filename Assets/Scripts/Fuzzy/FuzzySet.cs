@@ -10,66 +10,106 @@ namespace GCU.FraserConnolly.AI.Fuzzy
     //
     //  Desc:   class to define an interface for a fuzzy set
     //-----------------------------------------------------------------------------
-    public abstract class FuzzySet
+    public abstract class FuzzySet : MonoBehaviour
     {
 
-        //this will hold the degree of membership of a given value in this set 
-        protected double m_dDOM;
+        [SerializeField]
+        protected string _setName;
+        public string SetName => _setName;
+        
+        [SerializeField]
+        private Color _colour = Color.white;
+        
+        public Color Colour => _colour;
 
-        //this is the maximum of the set's membership function. For instamce, if
+        [SerializeField]
+        protected AnimationCurve _curve;
+
+        private void buildCurve()
+        {
+            if ( _curve == null )
+            {
+                _curve = new AnimationCurve();
+            }
+
+            _curve.ClearKeys();
+            GetValueRange(out float min, out float max);
+            float StepSize = (max - min) / (float)FuzzyModule.NumSamples;
+
+            for (int i = 0; i < FuzzyModule.NumSamples; i++)
+            {
+                float x = (float) ( i * StepSize ) + min;
+                Keyframe kf = new Keyframe(x, (float)CalculateDOM(x));
+                _curve.AddKey(kf);
+            }
+        }
+
+        //this will hold the degree of membership of a given value in this set 
+        protected float _DOM;
+
+        //this is the maximum of the set's membership function. For instance, if
         //the set is triangular then this will be the peak point of the triangular.
         //if the set has a plateau then this value will be the mid point of the 
         //plateau. This value is set in the constructor to avoid run-time
         //calculation of mid-point values.
-        protected double m_dRepresentativeValue;
+        protected float _RepresentativeValue;
 
-        public FuzzySet(double RepVal)
+        public abstract void GetValueRange(out float min, out float max);
+
+        public void Initialise(string name, float RepVal)
         {
-            m_dDOM = 0.0;
-            m_dRepresentativeValue = RepVal;
+            _curve = new AnimationCurve();
+            _setName = name;
+            _DOM = 0.0f;
+            _RepresentativeValue = RepVal;
         }
 
         //return the degree of membership in this set of the given value. NOTE,
         //this does not set m_dDOM to the DOM of the value passed as the parameter.
         //This is because the centroid defuzzification method also uses this method
         //to determine the DOMs of the values it uses as its sample points.
-        public abstract double CalculateDOM(double val);
+        public abstract float CalculateDOM(float val);
 
         //if this fuzzy set is part of a consequent FLV, and it is fired by a rule 
         //then this method sets the DOM (in this context, the DOM represents a
         //confidence level)to the maximum of the parameter value or the set's 
         //existing m_dDOM value
-        public void ORwithDOM(double val)
+        public void ORwithDOM(float val)
         {
-            if (val > m_dDOM)
+            if (val > _DOM)
             {
-                m_dDOM = val;
+                _DOM = val;
             }
         }
 
         //accessor methods
-        public double GetRepresentativeVal()
+        public float GetRepresentativeVal()
         {
-            return m_dRepresentativeValue;
+            return _RepresentativeValue;
         }
 
         public void ClearDOM()
         {
-            m_dDOM = 0.0;
+            _DOM = 0.0f;
         }
 
-        public double GetDOM()
+        public float GetDOM()
         {
-            return m_dDOM;
+            return _DOM;
         }
 
-        public void SetDOM(double val)
+        public void SetDOM(float val)
         {
-            if ((val <= 1) && (val >= 0))
+            if (! ( (val <= 1f) && (val >= 0f) ) )
             {
                 Debug.Log("<FuzzySet::SetDOM>: invalid value");
             }
-            m_dDOM = val;
+            _DOM = val;
+        }
+
+        protected virtual void OnValidate()
+        {
+            buildCurve();
         }
     }
 }
