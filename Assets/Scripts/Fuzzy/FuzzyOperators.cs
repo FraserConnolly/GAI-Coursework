@@ -22,6 +22,11 @@ namespace GCU.FraserConnolly.AI.Fuzzy
     ///////////////////////////////////////////////////////////////////////////////
     public class FzAND : FuzzyTerm
     {
+        //virtual ctor
+        public override FuzzyTerm Clone()
+        {
+            return new FzAND(this);
+        }
 
         //an instance of this class may AND together up to 4 terms
         private List<FuzzyTerm> m_Terms;

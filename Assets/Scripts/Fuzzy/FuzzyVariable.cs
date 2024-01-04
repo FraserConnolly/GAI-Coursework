@@ -155,7 +155,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             //adjust range if necessary
             AdjustRangeToFit(minBound, maxBound);
 
-            return FzSet(m_MemberSets[name]);
+            return new FzSet(m_MemberSets[name]);
         }
 
         //--------------------------- AddLeftShoulder ---------------------------------
@@ -172,7 +172,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             //adjust range if necessary
             AdjustRangeToFit(minBound, maxBound);
 
-            return FzSet(m_MemberSets[name]);
+            return new FzSet(m_MemberSets[name]);
         }
 
 
@@ -190,7 +190,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             //adjust range if necessary
             AdjustRangeToFit(minBound, maxBound);
 
-            return FzSet(m_MemberSets[name]);
+            return new FzSet( m_MemberSets[ name ] );
         }
 
         //--------------------------- AddSingletonSet ---------------------------------
@@ -208,7 +208,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 
             AdjustRangeToFit(minBound, maxBound);
 
-            return FzSet(*m_MemberSets[name]);
+            return new FzSet( m_MemberSets[ name ] );
         }
 
         //---------------------------- WriteDOMs --------------------------------------

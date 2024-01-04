@@ -15,10 +15,9 @@ namespace Assets.Scripts.Fuzzy
 
         private FuzzySet m_Set;
 
-        public FzVery(FzSet ft)
-        {
-            m_Set = ft.m_Set;
-        }
+        public FzVery(FzSet ft) { m_Set = ft.m_Set; }
+
+        private FzVery(FzVery inst) { m_Set = inst.m_Set; }
 
         public override double GetDOM()
         {
@@ -47,6 +46,8 @@ namespace Assets.Scripts.Fuzzy
         private FuzzySet m_Set;
 
         public FzFairly(FzSet ft) { m_Set = ft.m_Set; }
+
+        private FzFairly(FzFairly inst) { m_Set = inst.m_Set; }
 
         public override double GetDOM()
         {

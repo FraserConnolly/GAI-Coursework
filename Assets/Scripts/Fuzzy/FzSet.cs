@@ -14,10 +14,9 @@
         //a reference to the fuzzy set this proxy represents
         public FuzzySet m_Set { get; private set; }
 
-        FzSet(FuzzySet fs)
-        {
-            m_Set = fs;
-        }
+        public FzSet(FuzzySet fs) { m_Set = fs; }
+
+        private FzSet ( FzSet inst ) {  m_Set = inst.m_Set; }
 
         public override FuzzyTerm Clone()
         {
