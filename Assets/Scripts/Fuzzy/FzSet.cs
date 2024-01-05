@@ -1,4 +1,7 @@
-﻿namespace GCU.FraserConnolly.AI.Fuzzy
+﻿using System;
+using UnityEngine;
+
+namespace GCU.FraserConnolly.AI.Fuzzy
 {
     //-----------------------------------------------------------------------------
     //
@@ -7,21 +10,19 @@
     //  Desc:   class to provide a proxy for a fuzzy set. The proxy inherits from
     //          FuzzyTerm and therefore can be used to create fuzzy rules
     //-----------------------------------------------------------------------------
-
+    [Serializable]
     public class FzSet : FuzzyTerm
     {
 
         //a reference to the fuzzy set this proxy represents
-        public FuzzySet m_Set { get; private set; }
+        [SerializeField]
+        private FuzzySet _set;
+        public FuzzySet m_Set { get => _set; private set => _set = value; }
 
+        public FzSet() { }
         public FzSet(FuzzySet fs) { m_Set = fs; }
 
         private FzSet ( FzSet inst ) {  m_Set = inst.m_Set; }
-
-        public override FuzzyTerm Clone()
-        {
-            return new FzSet(this);
-        }
 
         public override float GetDOM()
         {

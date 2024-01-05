@@ -70,6 +70,13 @@ namespace GCU.FraserConnolly.AI.Fuzzy
                     _MinRange = min;
                 }
             }
+
+            if ( _MaxRange == _MinRange )
+            {
+                _MaxRange = 1f;
+                _MinRange = 0f;
+                return;
+            }
         }
 
         //--------------------------- Fuzzify -----------------------------------------

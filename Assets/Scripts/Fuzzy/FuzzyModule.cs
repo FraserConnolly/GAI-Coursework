@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Text;
+using com.cyborgAssets.inspectorButtonPro;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
@@ -22,7 +23,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         FuzzyVariable[] _variables = Array.Empty<FuzzyVariable>() ;
 
         //a vector containing all the fuzzy rules
-        List<FuzzyRule> m_Rules;
+        FuzzyRule[] _rules = Array.Empty<FuzzyRule>();
 
         //-------------------------- ClearConsequents ---------------------------------
         //
@@ -30,19 +31,20 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //-----------------------------------------------------------------------------
         void SetConfidencesOfConsequentsToZero()
         {
-            foreach (var curRule in m_Rules)
+            foreach (var curRule in _rules)
             {
                 curRule.SetConfidenceOfConsequentToZero();
             }
         }
 
         //creates a new 'empty' fuzzy variable and returns a reference to it.
-        public FuzzyVariable CreateFLV(string VarName)
+        [ProButton]
+        public FuzzyVariable CreateFLV(string FlvName)
         {
-            var go = new GameObject(VarName);
+            var go = new GameObject(FlvName);
             go.transform.SetParent(transform, false);
             var flv = go.AddComponent<FuzzyVariable>();
-            flv.SetName(VarName);
+            flv.SetName(FlvName);
 
             getFLVs();
 
@@ -54,10 +56,24 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             _variables = GetComponentsInChildren<FuzzyVariable>();
         }
 
+        public void getRules( )
+        {
+            _rules = GetComponents<FuzzyRule>();
+        }
+
         //adds a rule to the module
+        [ProButton]
+        public void AddRule()
+        {
+            gameObject.AddComponent<FuzzyRule>();
+            getRules();
+        }
+
         public void AddRule(FuzzyTerm antecedent, FuzzyTerm consequence)
         {
-            m_Rules.Add(new FuzzyRule(antecedent, consequence));
+            var rule = gameObject.AddComponent<FuzzyRule>();
+            rule.Initialise(antecedent, consequence);
+            getRules();
         }
 
         //----------------------------- Fuzzify ---------------------------------------
@@ -98,7 +114,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             SetConfidencesOfConsequentsToZero();
 
             //process the rules
-            foreach (var curRule in m_Rules)
+            foreach (var curRule in _rules)
             {
                 curRule.Calculate();
             }

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
+using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
+
     //-----------------------------------------------------------------------------
     //
     //  Name:   FuzzyTerm.h
@@ -11,12 +14,17 @@ namespace GCU.FraserConnolly.AI.Fuzzy
     //  Desc:   abstract class to provide an interface for classes able to be
     //          used as terms in a fuzzy if-then rule base.
     //-----------------------------------------------------------------------------
-    public abstract class FuzzyTerm
+    [Serializable]
+    public abstract class FuzzyTerm : MonoBehaviour, IFuzzyTerm
     {
-
-        //all terms must implement a virtual constructor
-        public abstract FuzzyTerm Clone();
-
+        public enum Terms
+        {
+            SET,
+            AND,
+            OR,
+            VERY,
+            FAIRLY
+        }
         //retrieves the degree of membership of the term
         public abstract float GetDOM();
 
@@ -25,7 +33,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 
         //method for updating the DOM of a consequent when a rule fires
         public abstract void ORwithDOM(float val);
-
     }
 }
 
