@@ -18,9 +18,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 
         public FzVery() { }
 
-        public FzVery(FzSet ft) { _set = ft.m_Set; }
-
-        private FzVery(FzVery inst) { _set = inst._set; }
+        public FzVery(FuzzySet ft) { _set = ft; }
 
         public override float GetDOM()
         {

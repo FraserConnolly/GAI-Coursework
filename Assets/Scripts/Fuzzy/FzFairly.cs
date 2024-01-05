@@ -12,9 +12,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         public FuzzySet FuzzySet { get { return _set; } }
 
         public FzFairly() {  }
-        public FzFairly(FzSet ft) { _set = ft.m_Set; }
-
-        private FzFairly(FzFairly inst) { _set = inst._set; }
+        public FzFairly(FuzzySet ft) { _set = ft; }
 
         public override float GetDOM()
         {

@@ -23,7 +23,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 
         public void Initialise(string name, float mid, float left, float right)
         {
-            base.Initialise(name, mid);
+            base.Initialise(name);
             _MidPoint = mid;
             _LeftOffset = left;
             _RightOffset = right;
@@ -49,6 +49,11 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         {
             min = _MidPoint - _LeftOffset;
             max = _MidPoint + _RightOffset;
+        }
+
+        public override float GetRepresentativeVal()
+        {
+            return _MidPoint;
         }
     }
 }

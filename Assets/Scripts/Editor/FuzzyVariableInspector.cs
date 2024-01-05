@@ -13,6 +13,8 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 			flv.OnValidate();
 			TLP.Editor.EditorGraph graph = new TLP.Editor.EditorGraph(flv.MinRange, 0f, flv.MaxRange, 1f, "Fuzzy Sets", FuzzyModule.NumSamples);
 
+			graph.AddLineX(flv.CrispValue, color: UnityEngine.Color.green);
+
 			// render grid lines
 			graph.GridLinesX = (flv.MaxRange - flv.MinRange) / 10;
 			graph.GridLinesY = .25f;
@@ -24,6 +26,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 					continue;
 				}
 				graph.AddFunction(x => (float)item.CalculateDOM(x), item.Colour);
+				graph.AddLineX(item.GetRepresentativeVal(), item.Colour);
 			}
 
 			var stepSize = (flv.MaxRange - flv.MinRange) / FuzzyModule.NumSamples;

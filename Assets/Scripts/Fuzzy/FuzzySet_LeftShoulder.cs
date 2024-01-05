@@ -23,7 +23,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 
         public void Initialise(string name, float peak, float LeftOffset, float RightOffset)
         {
-            base.Initialise(name, ((peak - 1f) + peak) / 2f);
+            base.Initialise(name);
             _PeakPoint = peak;
             _LeftOffset = LeftOffset;
             _RightOffset = RightOffset;
@@ -75,6 +75,11 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         {
             min = _PeakPoint - _LeftOffset;
             max = _PeakPoint + _RightOffset;
+        }
+
+        public override float GetRepresentativeVal()
+        {
+            return ((_PeakPoint - _LeftOffset) + _PeakPoint) / 2f;
         }
     }
 }

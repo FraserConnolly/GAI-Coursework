@@ -44,7 +44,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             var go = new GameObject(FlvName);
             go.transform.SetParent(transform, false);
             var flv = go.AddComponent<FuzzyVariable>();
-            flv.SetName(FlvName);
 
             getFLVs();
 
@@ -58,20 +57,24 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 
         public void getRules( )
         {
-            _rules = GetComponents<FuzzyRule>();
+            _rules = GetComponentsInChildren<FuzzyRule>();
         }
 
         //adds a rule to the module
         [ProButton]
-        public void AddRule()
+        public void AddRule(string name)
         {
-            gameObject.AddComponent<FuzzyRule>();
+            GameObject go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            go.AddComponent<FuzzyRule>();
             getRules();
         }
 
-        public void AddRule(FuzzyTerm antecedent, FuzzyTerm consequence)
+        public void AddRule(string name, FuzzyTerm antecedent, FuzzyTerm consequence)
         {
-            var rule = gameObject.AddComponent<FuzzyRule>();
+            GameObject go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var rule = go.AddComponent<FuzzyRule>();
             rule.Initialise(antecedent, consequence);
             getRules();
         }
@@ -81,6 +84,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //  this method calls the Fuzzify method of the variable with the same name
         //  as the key
         //-----------------------------------------------------------------------------
+        [ProButton]
         public void Fuzzify(string NameOfFLV, float val)
         {
             FuzzyVariable flv = _variables.Where(v => v.VariableName == NameOfFLV).FirstOrDefault();
@@ -100,8 +104,11 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //  given a fuzzy variable and a deffuzification method this returns a 
         //  crisp value
         //-----------------------------------------------------------------------------
-        public double DeFuzzify(string NameOfFLV, DefuzzifyMethod method = DefuzzifyMethod.max_av)
+        [ProButton]
+        public float DeFuzzify(string NameOfFLV, DefuzzifyMethod method = DefuzzifyMethod.max_av)
         {
+            getFLVs();
+            getRules();
             FuzzyVariable flv = _variables.Where(v => v.VariableName == NameOfFLV).FirstOrDefault();
 
             //first make sure the key exists
@@ -119,28 +126,36 @@ namespace GCU.FraserConnolly.AI.Fuzzy
                 curRule.Calculate();
             }
 
+            float defuzzedValue = 0f;
+
             //now defuzzify the resultant conclusion using the specified method
             switch (method)
             {
                 case DefuzzifyMethod.centroid:
-                    return flv.DeFuzzifyCentroid(NumSamples);
+                    defuzzedValue = flv.DeFuzzifyCentroid(NumSamples);
+                    break;
                 case DefuzzifyMethod.max_av:
-                    return flv.DeFuzzifyMaxAv();
+                    defuzzedValue = flv.DeFuzzifyMaxAv();
+                    break;
             }
 
-            return 0;
+            Debug.Log($"{gameObject.name} - {flv.VariableName} = {defuzzedValue}", gameObject);
+
+            return defuzzedValue;
         }
 
         //writes the DOMs of all the variables in the module to an output stream
+        [ProButton]
         public void WriteAllDOMs()
         {
+            StringBuilder log = new StringBuilder();
+            log.AppendLine(gameObject.name);
             foreach (var curVar in _variables)
             {
-                StringBuilder log = new StringBuilder();
-                log.Append(curVar.VariableName);
+                log.AppendLine(curVar.VariableName);
                 curVar.WriteDOMs(log);
-                Debug.Log(log.ToString());
             }
+            Debug.Log(log.ToString());
         }
     }
 }

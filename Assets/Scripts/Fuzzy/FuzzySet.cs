@@ -10,12 +10,10 @@ namespace GCU.FraserConnolly.AI.Fuzzy
     //
     //  Desc:   class to define an interface for a fuzzy set
     //-----------------------------------------------------------------------------
-    public abstract class FuzzySet : MonoBehaviour
+    public abstract class FuzzySet : FuzzyTerm
     {
 
-        [SerializeField]
-        protected string _setName;
-        public string SetName => _setName;
+        public string SetName => gameObject.name;
         
         [SerializeField]
         private Color _colour = Color.white;
@@ -47,21 +45,14 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //this will hold the degree of membership of a given value in this set 
         protected float _DOM;
 
-        //this is the maximum of the set's membership function. For instance, if
-        //the set is triangular then this will be the peak point of the triangular.
-        //if the set has a plateau then this value will be the mid point of the 
-        //plateau. This value is set in the constructor to avoid run-time
-        //calculation of mid-point values.
-        protected float _RepresentativeValue;
-
+        
         public abstract void GetValueRange(out float min, out float max);
 
-        public void Initialise(string name, float RepVal)
+        public void Initialise(string name)
         {
             _curve = new AnimationCurve();
-            _setName = name;
+            gameObject.name = name;
             _DOM = 0.0f;
-            _RepresentativeValue = RepVal;
         }
 
         //return the degree of membership in this set of the given value. NOTE,
@@ -73,8 +64,8 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //if this fuzzy set is part of a consequent FLV, and it is fired by a rule 
         //then this method sets the DOM (in this context, the DOM represents a
         //confidence level)to the maximum of the parameter value or the set's 
-        //existing m_dDOM value
-        public void ORwithDOM(float val)
+        //existing _DOM value
+        public override void ORwithDOM(float val)
         {
             if (val > _DOM)
             {
@@ -82,18 +73,18 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             }
         }
 
-        //accessor methods
-        public float GetRepresentativeVal()
-        {
-            return _RepresentativeValue;
-        }
+        //this is the maximum of the set's membership function. For instance, if
+        //the set is triangular then this will be the peak point of the triangular.
+        //if the set has a plateau then this value will be the mid point of the 
+        //plateau.
+        public abstract float GetRepresentativeVal();
 
-        public void ClearDOM()
+        public override void ClearDOM()
         {
             _DOM = 0.0f;
         }
 
-        public float GetDOM()
+        public override float GetDOM()
         {
             return _DOM;
         }

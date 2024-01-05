@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using com.cyborgAssets.inspectorButtonPro;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -31,11 +32,9 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         
         public float MaxRange => _MaxRange;
 
+        public string VariableName => gameObject.name;
 
-        [SerializeField]
-        private string _name;
-
-        public string VariableName => _name;
+        public float CrispValue { get; private set; }
 
         //a map of the fuzzy sets that comprise this variable
         private FuzzySet[] _Sets;
@@ -44,7 +43,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 
         public void UpdateSets()
         {
-            _Sets = GetComponents<FuzzySet>();
+            _Sets = GetComponentsInChildren<FuzzySet>();
 
             if ( ! _Sets.Any() )
             {
@@ -94,8 +93,10 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             //make sure the value is within the bounds of this variable
             if (!((val >= _MinRange) && (val <= _MaxRange)))
             {
-                Debug.Log("<FuzzyVariable::Fuzzify>: value out of range");
+                Debug.Log("<FuzzyVariable::Fuzzify>: value out of range", gameObject);
             }
+
+            CrispValue = val;
 
             //for each set in the FLV calculate the DOM for the given value
             foreach (var curSet in _Sets)
@@ -200,30 +201,34 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //
         //  adds a triangular shaped fuzzy set to the variable
         //-----------------------------------------------------------------------------
-        public FzSet AddTriangularSet(string name,
+        public FuzzySet AddTriangularSet(string name,
                                              float minBound,
                                              float peak,
                                              float maxBound)
         {
-            var set = gameObject.AddComponent<FuzzySet_Triangle>();
+            var go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var set = go.AddComponent<FuzzySet_Triangle>();
             set.Initialise(name, peak, peak - minBound, maxBound - peak);
             UpdateSets();
-            return new FzSet( set );
+            return set;
         }
 
         //--------------------------- AddLeftShoulder ---------------------------------
         //
         //  adds a left shoulder type set
         //-----------------------------------------------------------------------------
-        public FzSet AddLeftShoulderSet( string name,
+        public FuzzySet AddLeftShoulderSet( string name,
                                                 float minBound,
                                                 float peak,
                                                 float maxBound)
         {
-            var set = gameObject.AddComponent<FuzzySet_LeftShoulder>();
+            var go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var set = go.AddComponent<FuzzySet_LeftShoulder>();
             set.Initialise(name, peak, peak - minBound, maxBound - peak);
             UpdateSets();
-            return new FzSet( set );
+            return set;
         }
 
 
@@ -231,30 +236,34 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //
         //  adds a left shoulder type set
         //-----------------------------------------------------------------------------
-        public FzSet AddRightShoulderSet(string name,
+        public FuzzySet AddRightShoulderSet(string name,
                                                  float minBound,
                                                  float peak,
                                                  float maxBound)
         {
-            var set = gameObject.AddComponent<FuzzySet_RightShoulder>();
+            var go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var set = go.AddComponent<FuzzySet_RightShoulder>();
             set.Initialise(name, peak, peak - minBound, maxBound - peak);
             UpdateSets();
-            return new FzSet( set );
+            return set;
         }
 
         //--------------------------- AddSingletonSet ---------------------------------
         //
         //  adds a singleton to the variable
         //-----------------------------------------------------------------------------
-        public FzSet AddSingletonSet( string name,
+        public FuzzySet AddSingletonSet( string name,
                                             float minBound,
                                             float peak,
                                             float maxBound)
         {
-            var set = gameObject.AddComponent<FuzzySet_Singleton>();
+            var go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var set = go.AddComponent<FuzzySet_Singleton>();
             set.Initialise(name, peak, peak - minBound, maxBound - peak);
             UpdateSets();
-            return new FzSet( set );
+            return set;
         }
 
         //---------------------------- WriteDOMs --------------------------------------
@@ -266,11 +275,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             }
 
             log.AppendLine($"Min Range: {_MinRange} Max Range: {_MaxRange} ");
-        }
-
-        public void SetName( string name )
-        {
-            _name = name;
         }
 
         public float SumOfMembership(float val)

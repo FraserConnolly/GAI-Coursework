@@ -17,14 +17,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
     [Serializable]
     public abstract class FuzzyTerm : MonoBehaviour, IFuzzyTerm
     {
-        public enum Terms
-        {
-            SET,
-            AND,
-            OR,
-            VERY,
-            FAIRLY
-        }
         //retrieves the degree of membership of the term
         public abstract float GetDOM();
 

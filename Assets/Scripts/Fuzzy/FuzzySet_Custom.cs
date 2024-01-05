@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
@@ -14,11 +15,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             }
         }
 
-        public void Initialise(string name) 
-        {
-            base.Initialise(name, 0f);
-        }
-
         public override float CalculateDOM(float val)
         {
             if (_curve == null || _curve.keys.Count() == 0)
@@ -32,8 +28,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         protected override void OnValidate()
         {
             // prevent base buildCurve from being executed.
-            // to do set the base._RepresentativeValue value to something from _curve
-            base._RepresentativeValue = 0f;
         }
 
         public override void GetValueRange(out float min, out float max)
@@ -47,6 +41,11 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             
             min = _curve.keys.Min(kf => kf.time);
             max = _curve.keys.Max(kf => kf.time);
+        }
+
+        public override float GetRepresentativeVal()
+        {
+            throw new NotImplementedException();
         }
     }
 }
