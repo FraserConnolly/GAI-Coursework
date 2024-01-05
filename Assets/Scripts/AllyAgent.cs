@@ -17,6 +17,8 @@ public class AllyAgent : SteeringAgent
 
     protected override void InitialiseFromAwake()
 	{
+        // weapons
+
 		//_weaponManager = gameObject.AddComponent<WeaponManager>();
      
 		// steering behaviours
@@ -32,7 +34,7 @@ public class AllyAgent : SteeringAgent
 	protected override void CooperativeArbitration()
 	{
         // The base CooperativeArbitration method written by Hamid doesn't 
-        // have any means of arbitrating between steering behvaiours.
+        // have any means of arbitrating between steering behaviours.
         // Make sure not to use it.
         //base.CooperativeArbitration();
 
@@ -56,7 +58,7 @@ public class AllyAgent : SteeringAgent
             }
         }
 
-        // apply intertia to CurrentVelocity if there is no steering velocity
+        // apply inertia to CurrentVelocity if there is no steering velocity
         if ( SteeringVelocity ==  Vector3.zero && CurrentVelocity != Vector3.zero)
         {
             CurrentVelocity *= _inertia;
