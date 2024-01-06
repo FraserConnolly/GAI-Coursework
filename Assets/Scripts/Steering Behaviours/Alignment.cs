@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using TMPro;
 using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.SteeringBehaviours
@@ -45,25 +46,33 @@ namespace GCU.FraserConnolly.AI.SteeringBehaviours
                 
                 if (targetDir.magnitude < _alignDistance)
                 {
-                    direction += agent.CurrentVelocity;
+                    direction += agent.CurrentVelocity; // agent.transform.up;
                     count++;
                 }
             }
             
             if (count > 0)
             {
-                return direction / count;
+                direction = direction / count;
             }
 
-            return direction;
+            if ( direction.normalized == transform.up )
+            {
+                direction = Vector3.zero;
+            }
+
+            desiredVelocity = direction;
+            steeringVelocity = desiredVelocity - steeringAgent.CurrentVelocity;
+
+            return steeringVelocity;
         }
 
         private void OnDrawGizmosSelected()
         {
-            if (ShowDebugLines)
-            {
-                Gizmos.DrawWireSphere(transform.position, _alignDistance);
-            }
+            //if (ShowDebugLines)
+            //{
+            //    Gizmos.DrawWireSphere(transform.position, _alignDistance);
+            //}
         }
     }
 }

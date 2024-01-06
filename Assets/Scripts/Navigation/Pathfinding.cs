@@ -11,9 +11,9 @@ namespace GCU.FraserConnolly.AI.Navigation
         public static IReadOnlyList<Node> GetPath ( Vector2Int startPoint, Vector2Int endPoint, out int cost )
         {
             cost = -1;
-            
+
             // check if either the start or end point is not navigable.
-            if ( ! GameData.Instance.Map.IsNavigatable(startPoint.x, startPoint.y) 
+            if ( ! GameData.Instance.Map.IsNavigatable(startPoint.x, startPoint.y)
               || ! GameData.Instance.Map.IsNavigatable(endPoint.x,   endPoint.y  ) )
             {
                 return null;
@@ -26,7 +26,8 @@ namespace GCU.FraserConnolly.AI.Navigation
             startNode = Node.GetNodeAtPoint(startPoint, nodes);
             endNode   = Node.GetNodeAtPoint(endPoint,   nodes);
 
-            if ( startNode == null )
+
+            if ( startNode == null ) 
             {
                 Debug.Log("Start node not found");
                 return null;
@@ -37,7 +38,12 @@ namespace GCU.FraserConnolly.AI.Navigation
                 Debug.Log("End node not found");
                 return null;
             }
-            
+
+            if (CanUseLastPath(startNode, endNode))
+            {
+                return s_lastCalculatedPath;
+            }
+
             var path = AStar ( startNode, endNode, EuclideanDistanceHeuristic);
 
             cost = endNode.g;
@@ -88,7 +94,6 @@ namespace GCU.FraserConnolly.AI.Navigation
             List<Node> closedList = new List<Node>();
 
             openList.Push(startNode);    // This is a priority queue
-            int visitOrder = 0; // DEBUG CODE: Used to assign order a node has been seen for to node debugging purposes. Would not be used in production code
 
             while (openList.Count > 0)
             {
@@ -155,23 +160,93 @@ namespace GCU.FraserConnolly.AI.Navigation
 
         private static List<Node> GetFoundPath(Node endNode)
         {
-            List<Node> foundPath = new List<Node>();
+            LinkedList<Node> foundPath = new LinkedList<Node>();
+
             if (endNode != null)
             {
-                foundPath.Add(endNode);
+                var lNode = foundPath.AddLast(endNode);
 
                 while (endNode.Parent != null)
                 {
-                    foundPath.Add(endNode.Parent);
+                    lNode = foundPath.AddBefore(lNode, endNode.Parent);
                     endNode = endNode.Parent;
                 }
-
-                // Reverse the path so the start node is at index 0
-                foundPath.Reverse();
             }
 
-            return foundPath;
+            MinimisePath(foundPath);
+
+            s_lastCalculatedPath = foundPath.ToList();
+
+            return s_lastCalculatedPath;
         }
 
+        private static void MinimisePath( LinkedList<Node> path )
+        {
+            if ( path.Count < 3 )
+            {
+                // this path can't be made any shorter
+                return;
+            }
+            
+            var length = path.Count;
+
+            var a = path.First;
+            var b = a.Next;
+            var c = b.Next;
+
+            Vector2Int min = new Vector2Int(-1, -1);
+            Vector2Int max = new Vector2Int(1, 1);
+
+            while (c != path.Last)
+            {
+                Vector2Int ab = b.Value.Coordinate - a.Value.Coordinate;
+                Vector2Int bc = c.Value.Coordinate - b.Value.Coordinate;
+
+                ab.Clamp(min, max);
+                bc.Clamp(min, max);
+
+                if (ab == bc)
+                {
+                    // b is directly between a and c. So, b can be deleted.
+                    path.Remove(b);
+                }
+                else
+                {
+                    a = a.Next;
+                }
+
+                b = a.Next;
+                c = b.Next;
+            }
+
+            Debug.Log($"Path length at start {length}, length at end {path.Count}.");
+        }
+
+        /// <summary>
+        /// This is a simply caching method.
+        /// Whenever an agent asks for a path this variable will be checked first to 
+        /// see if the last generated path will be good enough for them.
+        /// </summary>
+        private static List<Node> s_lastCalculatedPath;
+
+        private static bool CanUseLastPath ( Node startNode, Node endNode )
+        {
+            if (s_lastCalculatedPath == null)
+            {
+                return false;
+            }
+
+            if (s_lastCalculatedPath.Count == 0)
+            {
+                return false;
+            }
+
+            if ( s_lastCalculatedPath.Last() != endNode  )
+            {
+                return false;
+            }
+
+            return Node.HasLineOfSightBetweenNodes(startNode, s_lastCalculatedPath.First());
+        }
     }
 }

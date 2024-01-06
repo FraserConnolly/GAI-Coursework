@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -51,6 +52,13 @@ public class GameManager : MonoBehaviour
             {
                 item.gameObject.SetActive(false);
             }
+        }
+
+        if ( Input.GetKeyUp (KeyCode.F3))
+        {
+            var ally = FindObjectsOfType<AllyAgent>();
+
+            Selection.SetActiveObjectWithContext(ally[0], null);
         }
 
         if ( levelComplete  )

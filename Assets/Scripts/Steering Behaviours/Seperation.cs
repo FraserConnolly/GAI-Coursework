@@ -45,15 +45,18 @@ namespace GCU.FraserConnolly.AI.SteeringBehaviours
                 }
             }
 
+            desiredVelocity = steeringDirection;
+            steeringVelocity = desiredVelocity - steeringAgent.CurrentVelocity;
+
             return steeringDirection;
         }
 
         private void OnDrawGizmosSelected()
         {
-            if (ShowDebugLines)
-            {
-                Gizmos.DrawWireSphere(transform.position, _threshold);
-            }
+            //if (ShowDebugLines)
+            //{
+            //    Gizmos.DrawWireSphere(transform.position, _threshold);
+            //}
         }
     }
 }

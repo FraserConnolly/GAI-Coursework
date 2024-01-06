@@ -144,6 +144,7 @@ namespace GCU.FraserConnolly.AI.Navigation
                 //        break;
                 //}
                 Gizmos.DrawLine(lineStart, lineEnd);
+                Gizmos.DrawSphere(lineEnd, 0.4f);
             }
         }
     }

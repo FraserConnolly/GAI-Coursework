@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using UnityEngine;
 
-namespace GCU.FraserConnolly.AI.Navigation
+namespace GCU.FraserConnolly
 {
     public class Node
     {
@@ -12,8 +13,15 @@ namespace GCU.FraserConnolly.AI.Navigation
         public bool Navigable { get; private set; }
 
         private Node[] neighbours;
-        public IReadOnlyList<Node> Neighbours => neighbours;
+        private Node[] navigableNeighbours;
+
+        /// <summary>
+        /// Navigable Neighbours
+        /// </summary>
+        public IReadOnlyList<Node> Neighbours => navigableNeighbours;
         public int[] neighbourCosts;
+
+        public int islandID { get; private set; } = 0;
 
         public Node Parent { get; set; }
 
@@ -32,13 +40,38 @@ namespace GCU.FraserConnolly.AI.Navigation
         /// </summary>
         public int h { get; set; }
 
+        public Node North { get; private set; }
+        public Node South { get; private set; }
+        public Node East { get; private set; }
+        public Node West { get; private set; }
+
+        private static Map s_map = null;
+        private static List<Island> s_Islands = new List<Island>();
         private static Node[] s_Nodes = null;
 
         public Node(int x, int y)
         {
             Coordinate = new Vector2Int(x, y);
-            Navigable = GameData.Instance.Map.IsNavigatable(x, y);
-            Terrain = GameData.Instance.Map.GetTerrainAt(x, y);
+            Navigable = s_map.IsNavigatable(x, y);
+            Terrain = s_map.GetTerrainAt(x, y);
+        }
+
+        private Node GetRelativeNode(int x, int y)
+        {
+            x += Coordinate.x;
+            y += Coordinate.y;
+
+            if (x < 0 || x >= Map.MapWidth)
+            {
+                return null;
+            }
+
+            if (y < 0 || y >= Map.MapHeight)
+            {
+                return null;
+            }
+
+            return GetNodeAtPoint(x, y, s_Nodes);
         }
 
         /// <summary>
@@ -47,12 +80,21 @@ namespace GCU.FraserConnolly.AI.Navigation
         public static void ClearNodes()
         {
             s_Nodes = null;
+            s_Islands.Clear();
         }
 
-        private static void BuildNodes ()
+        private static void BuildNodes()
         {
-
             if (s_Nodes != null)
+            {
+                foreach (var node in s_Nodes)
+                {
+                    node.clearTempData();
+                }
+                return;
+            }
+
+            if (s_map == null)
             {
                 return;
             }
@@ -61,7 +103,7 @@ namespace GCU.FraserConnolly.AI.Navigation
 
             s_Nodes = new Node[ Map.MapSize ];
 
-            for ( int i = 0; i < Map.MapWidth ; i++ ) 
+            for ( int i = 0; i < Map.MapWidth ; i++ )
             {
                 for (int j = 0; j < Map.MapHeight; j++)
                 {
@@ -72,20 +114,87 @@ namespace GCU.FraserConnolly.AI.Navigation
             }
 
             EstablishNodeConnections();
+            SetIslandID();
+        }
+
+        /// <summary>
+        /// Inspired by https://gamedev.stackexchange.com/questions/169483/finding-islands-from-array
+        /// </summary>
+        private static void SetIslandID()
+        {
+            Queue<Node> queue = new Queue<Node>();
+            int islandID = 0;
+
+            foreach (var node in s_Nodes)
+            {
+                Map.Terrain terrain = node.Terrain;
+
+                if (node.islandID != 0)
+                {
+                    continue;
+                }
+
+                islandID++;
+                var island = new Island(islandID, terrain);
+                var size = 0;
+
+                node.islandID = islandID;
+                queue.Enqueue(node);
+
+                while (queue.Any())
+                {
+                    size++;
+                    var n = queue.Dequeue();
+
+                    foreach (var neighbour in n.neighbours)
+                    {
+                        if (neighbour == null)
+                        {
+                            continue;
+                        }
+
+                        if (neighbour.Terrain == terrain && neighbour.islandID == 0)
+                        {
+                            neighbour.islandID = islandID;
+                            island.Nodes.Add(neighbour);
+                            queue.Enqueue(neighbour);
+                        }
+                    }
+                }
+
+                s_Islands.Add(island);
+            }
         }
 
         private static void EstablishNodeConnections()
         {
-                for (int nodeY = 0; nodeY < Map.MapHeight; ++nodeY)
-                {
-                    for (int nodeX = 0; nodeX < Map.MapWidth; ++nodeX)
+            for (int nodeY = 0; nodeY < Map.MapHeight; ++nodeY)
+            {
+                for (int nodeX = 0; nodeX < Map.MapWidth; ++nodeX)
                 {
                     int nodeIndex = nodeX + (Map.MapWidth * nodeY);
                     Node node = s_Nodes[nodeIndex];
 
+                    node.North = node.GetRelativeNode(0, +1);
+                    node.South = node.GetRelativeNode(0, -1);
+                    node.East = node.GetRelativeNode(+1, 0);
+                    node.West = node.GetRelativeNode(-1, 0);
+
+                    node.neighbours = new Node[]
+                    {
+                        node.GetRelativeNode(0,   1 ), // N
+                        node.GetRelativeNode(1,   1 ), // NE
+                        node.GetRelativeNode(1,   0),  // E 
+                        node.GetRelativeNode(1,  -1 ), // SE
+                        node.GetRelativeNode(0,  -1 ), // S
+                        node.GetRelativeNode(-1, -1 ), // SW
+                        node.GetRelativeNode(-1,  0 ), // W
+                        node.GetRelativeNode(-1,  1 ), // NW
+                    };
+
                     if (!node.Navigable)
                     {
-                        node.neighbours = new Node[0];
+                        node.navigableNeighbours = new Node[0];
                         node.neighbourCosts = new int[0];
                         continue;
                     }
@@ -93,7 +202,7 @@ namespace GCU.FraserConnolly.AI.Navigation
                     // Count the number of navigable neighbours
                     int connectedNodesCount = CountNavigableNeighbours(nodeY, nodeX);
 
-                    node.neighbours = new Node[connectedNodesCount];
+                    node.navigableNeighbours = new Node[connectedNodesCount];
                     node.neighbourCosts = new int[connectedNodesCount];
 
                     int connectedNodesIndex = 0;
@@ -109,13 +218,13 @@ namespace GCU.FraserConnolly.AI.Navigation
                             if (neighbourX < 0 ||
                                 neighbourX >= Map.MapWidth ||
                                 (neighbourX == nodeX && neighbourY == nodeY) ||
-                                ! GameData.Instance.Map.IsNavigatable(neighbourX, neighbourY))
+                                !s_map.IsNavigatable(neighbourX, neighbourY))
                             {
                                 continue;
                             }
                             var neighbourNode = s_Nodes[neighbourX + (neighbourY * Map.MapWidth)];
-                            node.neighbours[connectedNodesIndex] = neighbourNode ;
-                            node.neighbourCosts[connectedNodesIndex] = CalculateTerrainCost(node.Terrain ,neighbourNode.Terrain, CalculateTravelCost(nodeX, nodeY, neighbourX, neighbourY));
+                            node.navigableNeighbours[connectedNodesIndex] = neighbourNode ;
+                            node.neighbourCosts[connectedNodesIndex] = CalculateTerrainCost(node.Terrain , neighbourNode.Terrain, CalculateTravelCost(nodeX, nodeY, neighbourX, neighbourY));
                             ++connectedNodesIndex;
                         }
                     }
@@ -192,7 +301,7 @@ namespace GCU.FraserConnolly.AI.Navigation
                     if (neighbourX < 0 ||
                         neighbourX >= Map.MapWidth ||
                         (neighbourX == nodeX && neighbourY == nodeY) ||
-                        ! GameData.Instance.Map.IsNavigatable(neighbourX, neighbourY))
+                        !s_map.IsNavigatable(neighbourX, neighbourY))
                     {
                         continue;
                     }
@@ -204,16 +313,84 @@ namespace GCU.FraserConnolly.AI.Navigation
             return connectedNodesCount;
         }
 
-        public static IReadOnlyList<Node> GetAllNodes()
+        public static IReadOnlyList<Node> GetAllNodes(Map map = null)
         {
+            if (map != null && Node.s_map != map)
+            {
+                ClearNodes();
+                Node.s_map = map;
+            }
+
+            if (map == null && Node.s_map == null)
+            {
+                // use GameData Map
+                Node.s_map = GameData.Instance?.Map ?? null;
+            }
+
             BuildNodes();
 
-            return s_Nodes;
+            return s_Nodes ?? Array.Empty<Node>();
         }
 
-        public static Node GetNodeAtPoint ( Vector2Int point, IReadOnlyList<Node> nodes )
+        public static IReadOnlyCollection<Island> GetIsland(Map.Terrain terrain)
         {
-            return nodes.Where( n => n.Coordinate == point ).FirstOrDefault();
+            if (s_Islands == null && s_map == null)
+            {
+                return null;
+            }
+
+            if (s_Islands == null)
+            {
+                BuildNodes();
+            }
+
+            return s_Islands.Where(t => t.Terrain == terrain).ToList();
+        }
+
+        public static Node GetNodeAtPoint(Vector2Int point, IReadOnlyList<Node> nodes)
+        {
+            return nodes.Where(n => n.Coordinate == point).FirstOrDefault();
+        }
+
+        public static Node GetNodeAtPoint(int x, int y, IReadOnlyList<Node> nodes)
+        {
+            var index = x + y * Map.MapWidth;
+
+            if (index < 0 || index >= nodes.Count)
+            {
+                return null;
+            }
+
+            return nodes[index];
+            //return nodes.Where(n => n.Coordinate.x == x && n.Coordinate.y == y).FirstOrDefault();
+        }
+
+        public static IEnumerable<Node> GetNodesBetweenPoints ( Node start, Node end )
+        {
+            var e = BresLine.GetBresLinePoints( new Point( start.Coordinate.x, start.Coordinate.y), new Point( end.Coordinate.x, end.Coordinate.y));
+
+            foreach (var point in e)
+            {
+                yield return GetNodeAtPoint(new Vector2Int(point.X, point.Y), s_Nodes);
+            }
+        }
+
+        public static bool HasLineOfSightBetweenNodes ( Node start, Node end )
+        {
+            if ( start.Coordinate == end.Coordinate )
+            {
+                return true;
+            }
+
+            foreach (var node in GetNodesBetweenPoints(start, end))
+            {
+                if ( ! node.Navigable )
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static void OnSceneReload()
@@ -221,10 +398,88 @@ namespace GCU.FraserConnolly.AI.Navigation
             ClearNodes();
         }
 
-        internal void clearTempData()
+        public void clearTempData()
         {
             g = 0;
             h = 0;
+            Parent = null;
+        }
+    }
+
+    public class Island
+    {
+        public Island(int ID, Map.Terrain terrain)
+        {
+            this.ID = ID;
+            Terrain = terrain;
+            Nodes = new List<Node>();
+        }
+
+        public int ID { get; private set; }
+        public Map.Terrain Terrain { get; private set; }
+        public int Size => Nodes.Count;
+        public List<Node> Nodes { get; private set; }
+    }
+
+    /// <summary>
+    /// From:
+    /// https://www.codeproject.com/Articles/30686/Bresenham-s-Line-Algorithm-Revisited
+    /// </summary>
+    public static class BresLine
+    {
+
+        public static IEnumerable<Point> GetBresLinePoints ( Point start, Point end )
+        {
+            if ( start.X > end.X )
+            {
+                // swap X
+                int t = start.X;
+                start.X = end.X;
+                end.X = t;
+            }
+
+            if (start.Y > end.Y)
+            {
+                // swap X
+                int t = start.Y;
+                start.Y = end.Y;
+                end.Y = t;
+            }
+
+            return BresLineOrig( start, end );
+        }
+
+
+        /// <summary>
+        /// Creates a line from Begin to End starting at (x0,y0) and ending at (x1,y1)
+        /// * where x0 less than x1 and y0 less than y1
+        ///   AND line is less steep than it is wide (dx less than dy)
+        /// </summary>
+        private static IEnumerable<Point> BresLineOrig(Point begin, Point end)
+        {
+            Point nextPoint = begin;
+            int deltax = end.X - begin.X;
+            int deltay = end.Y - begin.Y;
+            int error = deltax / 2;
+            int ystep = 1;
+
+            if (end.Y < begin.Y)
+            {
+                ystep = -1;
+            }
+
+            while (nextPoint.X < end.X)
+            {
+                if (nextPoint != begin) yield return nextPoint;
+                nextPoint.X++;
+
+                error -= deltay;
+                if (error < 0)
+                {
+                    nextPoint.Y += ystep;
+                    error += deltax;
+                }
+            }
         }
     }
 }
