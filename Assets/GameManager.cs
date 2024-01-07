@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if ( Input.GetKeyUp (KeyCode.F2))
+        if (Input.GetKeyUp(KeyCode.F2))
         {
             // disable enemies
             var enemies = FindObjectsOfType<EnemyAgent>();
@@ -54,14 +54,14 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if ( Input.GetKeyUp (KeyCode.F3))
+        if (Input.GetKeyUp(KeyCode.F3))
         {
             var ally = FindObjectsOfType<AllyAgent>();
 
             Selection.SetActiveObjectWithContext(ally[0], null);
         }
 
-        if ( levelComplete  )
+        if (levelComplete)
         {
             return;
         }
@@ -76,25 +76,22 @@ public class GameManager : MonoBehaviour
             levelComplete = true;
 
             Debug.Log("Enemies have won!");
-            Debug.Break();
 
             if (reloadOnLevelComplete)
             {
-            ReloadScene();
-            return;
-        }
+                ReloadScene();
+                return;
+            }
         }
         else if (EnemyCount == 0)
         {
             levelComplete = true;
-
             Debug.Log("Allies have won!");
-            Debug.Break();
+            
             if (reloadOnLevelComplete)
-        {
-            Debug.Log("Enemies have won!");
-            Debug.Break();
-            ReloadScene();
+            {
+                Debug.Log("Enemies have won!");
+                ReloadScene();
             }
         }
     }

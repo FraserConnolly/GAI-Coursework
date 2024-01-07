@@ -40,23 +40,27 @@ namespace GCU.FraserConnolly.AI.SteeringBehaviours
 			return steeringVelocity;
 		}
 
-        private void Update()
-        {
-            if ( Input.GetMouseButton(0) )
-			{
-                var startScreenPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f);
-                var startWorldPosition = Camera.main.ScreenToWorldPoint(startScreenPosition);
 
-				int x = (int)(startWorldPosition.x);
-				int y = (int)(startWorldPosition.y);
+		///// <summary>
+		///// Used for debugging
+		///// </summary>
+  //      private void Update()
+  //      {
+  //          if ( Input.GetMouseButton(0) )
+		//	{
+  //              var startScreenPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f);
+  //              var startWorldPosition = Camera.main.ScreenToWorldPoint(startScreenPosition);
 
-				var navigable = GameData.Instance.Map.IsNavigatable(x, y);
+		//		int x = (int)(startWorldPosition.x);
+		//		int y = (int)(startWorldPosition.y);
 
-				if (navigable)
-				{
-					SetTarget(new Vector3(x, y, 0f));
-				}
-			}
-        }
+		//		var navigable = GameData.Instance.Map.IsNavigatable(x, y);
+
+		//		if (navigable)
+		//		{
+		//			SetTarget(new Vector3(x, y, 0f));
+		//		}
+		//	}
+  //      }
     }
 }

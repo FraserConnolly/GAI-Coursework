@@ -3537,6 +3537,52 @@ Transform:
   - {fileID: 937694607}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1496779640
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1496779642}
+  - component: {fileID: 1496779641}
+  m_Layer: 0
+  m_Name: Ling of Sight Debug
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1496779641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1496779640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 090b913c67036864ca1b9dff99959e53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _startTransform: {fileID: 0}
+  _endTransform: {fileID: 0}
+--- !u!4 &1496779642
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1496779640}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 46.05277, y: 50.167973, z: -0.25839663}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1667154393
 GameObject:
   m_ObjectHideFlags: 0
@@ -6814,7 +6860,7 @@ MonoBehaviour:
   EnemyCount: 0
   _allyCountDisplay: {fileID: 1883122654}
   _enemyCountDisplay: {fileID: 2108175445}
-  reloadOnLevelComplete: 0
+  reloadOnLevelComplete: 1
 --- !u!4 &2141041817
 Transform:
   m_ObjectHideFlags: 0
@@ -6911,3 +6957,4 @@ SceneRoots:
   - {fileID: 1191028805}
   - {fileID: 756945231572090357}
   - {fileID: 401929423}
+  - {fileID: 1496779642}

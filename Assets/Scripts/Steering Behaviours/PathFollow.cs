@@ -17,7 +17,7 @@ namespace GCU.FraserConnolly.AI.SteeringBehaviours
         private int _nextNodeIndex = -1;
 
         [SerializeField]
-        private float allowedDistanceToTarget = 2f;
+        private float allowedDistanceToTarget = 5f;
 
         public override Vector3 UpdateBehaviour(SteeringAgent steeringAgent)
         {
@@ -79,7 +79,7 @@ namespace GCU.FraserConnolly.AI.SteeringBehaviours
                 Node transformNode = Node.GetNodeAtPoint(currentLocation, Node.GetAllNodes());
 
                 // check for line of sight from current location to the proposed waypoint.
-                //if (Node.HasLineOfSightBetweenNodes(transformNode, nextNode))
+                if (Node.HasLineOfSightBetweenNodes(transformNode, nextNode))
                 {
                     // this node is close and can seen so start moving towards that node.
                     _nextNodeIndex++;

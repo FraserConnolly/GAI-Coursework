@@ -6,6 +6,11 @@ public class SpacialPartitioning : MonoBehaviour
 {
     static List<GameObject> _allAgents = new List<GameObject>();
 
+    public static IReadOnlyList<GameObject> GetAllAlliedAgents()
+    {
+        return GameData.Instance.allies.Where(a => a != null).ToList();
+    }
+
     public static IReadOnlyList<GameObject> GetAllAgents()
     {
         if ( _allAgents.Any() )

@@ -18,7 +18,7 @@ namespace GCU.FraserConnolly.AI.SteeringBehaviours
 
         public override Vector3 UpdateBehaviour(SteeringAgent steeringAgent)
         {
-            var _targets = SpacialPartitioning.GetAllAgents();
+            var _targets = SpacialPartitioning.GetAllAlliedAgents();
 
             Vector3 steeringDirection = Vector3.zero;
 

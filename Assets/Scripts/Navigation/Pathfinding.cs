@@ -8,6 +8,14 @@ namespace GCU.FraserConnolly.AI.Navigation
 {
     public class Pathfinding
     {
+        public static IReadOnlyList<Node> GetPath ( Vector3 start, Vector3 end )
+        {
+            return GetPath(
+                new Vector2Int( (int) start.x, (int) start.y ),
+                new Vector2Int( (int) end.x,   (int) end.y   ),
+                out _);
+        }
+
         public static IReadOnlyList<Node> GetPath ( Vector2Int startPoint, Vector2Int endPoint, out int cost )
         {
             cost = -1;
@@ -219,7 +227,7 @@ namespace GCU.FraserConnolly.AI.Navigation
                 c = b.Next;
             }
 
-            Debug.Log($"Path length at start {length}, length at end {path.Count}.");
+            //Debug.Log($"Path length at start {length}, length at end {path.Count}.");
         }
 
         /// <summary>

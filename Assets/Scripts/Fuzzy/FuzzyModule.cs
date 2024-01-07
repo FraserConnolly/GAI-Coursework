@@ -139,7 +139,7 @@ namespace GCU.FraserConnolly.AI.Fuzzy
                     break;
             }
 
-            Debug.Log($"{gameObject.name} - {flv.VariableName} = {defuzzedValue}", gameObject);
+            //Debug.Log($"{gameObject.name} - {flv.VariableName} = {defuzzedValue}", gameObject);
 
             return defuzzedValue;
         }
