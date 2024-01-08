@@ -4,16 +4,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
 {
     public class FuzzySet_RightShoulder : FuzzySet
     {
-
-        //-----------------------------------------------------------------------------
-        //
-        //  Author: Mat Buckland (www.ai-junkie.com)
-        //
-        //  Desc:   definition of a fuzzy set that has a right shoulder shape. (the
-        //          maximum value this variable can accept is *any* value greater than 
-        //          the midpoint.
-        //-----------------------------------------------------------------------------
-
         //the values that define the shape of this FLV
         [SerializeField]
         private float _PeakPoint;

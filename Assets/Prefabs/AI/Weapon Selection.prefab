@@ -3763,6 +3763,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3817881319226244523}
     m_Modifications:
+    - target: {fileID: 112605801328658909, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
+      propertyPath: m_Name
+      value: Close AND Okay
+      objectReference: {fileID: 0}
+    - target: {fileID: 541284433929103514, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
+      propertyPath: m_Name
+      value: Medium AND Okay
+      objectReference: {fileID: 0}
     - target: {fileID: 2249262266573540526, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
       propertyPath: m_Name
       value: Rocklauncher Selection
@@ -4338,6 +4346,14 @@ PrefabInstance:
     - target: {fileID: 2329395105334356991, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
       propertyPath: _curve.m_Curve.Array.data[49].value
       value: 0.9799999
+      objectReference: {fileID: 0}
+    - target: {fileID: 2571597572930846245, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
+      propertyPath: m_Name
+      value: Far AND Okay
+      objectReference: {fileID: 0}
+    - target: {fileID: 2764707562619001400, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
+      propertyPath: m_Name
+      value: Close AND Low
       objectReference: {fileID: 0}
     - target: {fileID: 4613732248513483696, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5054,6 +5070,10 @@ PrefabInstance:
     - target: {fileID: 4831193618577538351, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
       propertyPath: _curve.m_Curve.Array.data[66].value
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5256615402463819844, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
+      propertyPath: m_Name
+      value: Far AND Low
       objectReference: {fileID: 0}
     - target: {fileID: 5361479801175864438, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
       propertyPath: _RightOffset
@@ -5815,9 +5835,21 @@ PrefabInstance:
       propertyPath: _curve.m_Curve.Array.data[99].value
       value: 0.013571423
       objectReference: {fileID: 0}
+    - target: {fileID: 5475241366500095864, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
+      propertyPath: m_Name
+      value: Medium AND Low
+      objectReference: {fileID: 0}
+    - target: {fileID: 7134247854368046485, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
+      propertyPath: m_Name
+      value: Close AND Loads
+      objectReference: {fileID: 0}
     - target: {fileID: 7229215147768538893, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
       propertyPath: _MaxRange
       value: 31
+      objectReference: {fileID: 0}
+    - target: {fileID: 7672828903109816253, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
+      propertyPath: m_Name
+      value: Far AND Loads
       objectReference: {fileID: 0}
     - target: {fileID: 7772507721088097140, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
       propertyPath: _PeakPoint
@@ -7426,6 +7458,10 @@ PrefabInstance:
     - target: {fileID: 7943817565877190905, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
       propertyPath: _curve.m_Curve.Array.data[99].value
       value: 0.014999986
+      objectReference: {fileID: 0}
+    - target: {fileID: 8321963831021432576, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
+      propertyPath: m_Name
+      value: Medium AND Loads
       objectReference: {fileID: 0}
     - target: {fileID: 8443744333699055969, guid: c2a44788067c3524abf6e6d1464e2ce7, type: 3}
       propertyPath: _MaxRange

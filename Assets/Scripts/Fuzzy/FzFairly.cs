@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
-    ///////////////////////////////////////////////////////////////////////////////
-    class FzFairly : FuzzyTerm
+    public class FzFairly : FuzzyTerm
     {
         [SerializeField]
         private FuzzySet _set;

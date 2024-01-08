@@ -58,8 +58,6 @@ public class AllyAgent : SteeringAgent
         // Make sure not to use it.
         //base.CooperativeArbitration();
 
-        processDebugInput();
-
         if ( _enemyTarget != null )
         {
             _enemyTargetDistance = (_enemyTarget.transform.position - transform.position).magnitude;
@@ -124,43 +122,6 @@ public class AllyAgent : SteeringAgent
         if (SteeringVelocity == Vector3.zero && CurrentVelocity != Vector3.zero)
         {
             CurrentVelocity *= _inertia;
-        }
-    }
-
-    private void processDebugInput()
-    {
-        if (Input.GetMouseButton(0))
-        {
-            var startScreenPosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.0f);
-            var startWorldPosition = Camera.main.ScreenToWorldPoint(startScreenPosition);
-
-            int x = (int)(startWorldPosition.x);
-            int y = (int)(startWorldPosition.y);
-
-            if (x < 0 || y < 0 || x >= Map.MapWidth || y >= Map.MapHeight)
-            {
-                return;
-            }
-
-            var navigable = GameData.Instance.Map.IsNavigatable(x, y);
-
-            if (!navigable)
-            {
-                return;
-            }
-
-            Vector2Int startLocation = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-            Vector2Int endLocation = new Vector2Int(x, y);
-            var path = Pathfinding.GetPath(startLocation, endLocation, out _);
-            _pathFollowBehaviour.setPath(path);
-        }
-
-        if ( Input.GetMouseButton(1))
-        {
-            if ( CanAttack(Attack.AttackType.Gun) )
-            {
-                AttackWith(Attack.AttackType.Gun);
-            }
         }
     }
 

@@ -1,15 +1,7 @@
-﻿using System.Security.Cryptography;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
-    //-----------------------------------------------------------------------------
-    //
-    //  Author: Mat Buckland (www.ai-junkie.com)
-    //
-    //  Desc:   This defines a fuzzy set that is a singleton (a range
-    //          over which the DOM is always 1.0)
-    //-----------------------------------------------------------------------------
     public class FuzzySet_Singleton : FuzzySet
     {
 

@@ -2,14 +2,6 @@
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
-    //-----------------------------------------------------------------------------
-    //
-    //  Name:   FuzzySet.h
-    //
-    //  Author: Mat Buckland (www.ai-junkie.com)
-    //
-    //  Desc:   class to define an interface for a fuzzy set
-    //-----------------------------------------------------------------------------
     public abstract class FuzzySet : FuzzyTerm
     {
 
@@ -23,6 +15,10 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         [SerializeField]
         protected AnimationCurve _curve;
 
+        /// <summary>
+        /// Unity has a built in line graph tool which can be viewed in the inspector call AnimationCurve.
+        /// This function sets up the AnimationCurve object so that this fuzzy set can be visualised in the inspector.
+        /// </summary>
         private void buildCurve()
         {
             if ( _curve == null )
@@ -45,7 +41,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //this will hold the degree of membership of a given value in this set 
         protected float _DOM;
 
-        
         public abstract void GetValueRange(out float min, out float max);
 
         public void Initialise(string name)

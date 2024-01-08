@@ -1,23 +1,7 @@
-﻿using com.cyborgAssets.inspectorButtonPro;
-using System;
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
-
-    //-----------------------------------------------------------------------------
-    //
-    //  Name:   FuzzyRule.h
-    //
-    //  Author: Mat Buckland (www.ai-junkie.com)
-    //
-    //  Desc:   This class implements a fuzzy rule of the form:
-    //  
-    //          IF fzVar1 AND fzVar2 AND ... fzVarn THEN fzVar.c
-    //
-    //          
-    //-----------------------------------------------------------------------------
     public class FuzzyRule : MonoBehaviour
     {
         public void Initialise (FuzzyTerm antecedent, FuzzyTerm consequence)

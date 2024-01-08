@@ -4,21 +4,6 @@ using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
-    //-----------------------------------------------------------------------------
-    //
-    //  Name:   FuzzyOperators.h
-    //
-    //  Author: Mat Buckland (www.ai-junkie.com)
-    //
-    //  Desc:   classes to provide the fuzzy AND and OR operators to be used in
-    //          the creation of a fuzzy rule base
-    //-----------------------------------------------------------------------------
-
-    ///////////////////////////////////////////////////////////////////////////////
-    //
-    //  a fuzzy AND operator class
-    //
-    ///////////////////////////////////////////////////////////////////////////////
     [Serializable]
     public class FzAND : FuzzyTerm
     {
@@ -27,11 +12,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         [SerializeField]
         private List<FuzzyTerm> m_Terms;
 
-        ///////////////////////////////////////////////////////////////////////////////
-        //
-        //  implementation of FzAND
-        //
-        ///////////////////////////////////////////////////////////////////////////////
         public FzAND(FzAND fa) : this()
         {
             foreach (var curTerm in m_Terms)
@@ -53,10 +33,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             }
         }
 
-        //--------------------------- GetDOM ------------------------------------------
-        //
-        //  the AND operator returns the minimum DOM of the sets it is operating on
-        //-----------------------------------------------------------------------------
         public override float GetDOM()
         {
             float smallest = float.MaxValue;
@@ -72,7 +48,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             return smallest;
         }
 
-        //------------------------- ORwithDOM -----------------------------------------
         public override void ORwithDOM(float val)
         {
             foreach (var curTerm in m_Terms)
@@ -81,7 +56,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
             }
         }
 
-        //---------------------------- ClearDOM ---------------------------------------
         public override void ClearDOM()
         {
             foreach (var curTerm in m_Terms)

@@ -6,17 +6,6 @@ using UnityEngine;
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
-    //-----------------------------------------------------------------------------
-    //
-    //  Name:   FuzzyVariable.h
-    //
-    //  Author: Mat Buckland (www.ai-junkie.com)
-    //
-    //  Desc:   Class to define a fuzzy linguistic variable (FLV).
-    //
-    //          An FLV comprises of a number of fuzzy sets  
-    //
-    //-----------------------------------------------------------------------------
     public class FuzzyVariable : MonoBehaviour
     {
         //the minimum and maximum value of the range of this variable
@@ -194,8 +183,6 @@ namespace GCU.FraserConnolly.AI.Fuzzy
         //added the m_dMinRange and m_dMaxRange are adjusted accordingly. All of the
         //methods return a proxy class representing the newly created instance. This
         //proxy set can be used as an operand when creating the rule base.
-
-
 
         //------------------------- AddTriangularSet ----------------------------------
         //

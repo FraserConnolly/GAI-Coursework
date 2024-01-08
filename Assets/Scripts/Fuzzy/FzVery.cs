@@ -2,12 +2,6 @@
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
-    //-----------------------------------------------------------------------------
-    //
-    //  Author: Mat Buckland (www.ai-junkie.com)
-    //
-    //  Desc:   classes to implement fuzzy hedges 
-    //-----------------------------------------------------------------------------
     public class FzVery : FuzzyTerm
     {
 

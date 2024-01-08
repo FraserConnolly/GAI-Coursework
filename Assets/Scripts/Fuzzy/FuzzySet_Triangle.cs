@@ -2,14 +2,6 @@
 
 namespace GCU.FraserConnolly.AI.Fuzzy
 {
-    //-----------------------------------------------------------------------------
-    //
-    //  Author: Mat Buckland (www.ai-junkie.com)
-    //
-    //  Desc:   This is a simple class to define fuzzy sets that have a triangular 
-    //          shape and can be defined by a mid point, a left displacement and a
-    //          right displacement. 
-    //-----------------------------------------------------------------------------
     public class FuzzySet_Triangle : FuzzySet
     {
         //the values that define the shape of this FLV
